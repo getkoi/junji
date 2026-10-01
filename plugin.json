@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "junji",
+  "version": "0.12.0",
+  "description": "A method skill for long, multi-session engineering projects. Plans, decisions, and progress live in the repository.",
+  "author": {
+    "name": "matheusps",
+    "url": "https://github.com/matheusps"
+  },
+  "homepage": "https://github.com/getkoi/junji",
+  "repository": "https://github.com/getkoi/junji",
+  "license": "MIT",
+  "keywords": [
+    "junji",
+    "planning",
+    "engineering",
+    "agents",
+    "method"
+  ]
+}
