@@ -14,6 +14,7 @@ the writing SSOT.
 | `PLAN.md` | explanation | human | Why this approach. Argument + rejected alternatives. |
 | `CONTEXT.md` | reference | fresh window | Binding facts a window obeys. No rationale. Includes Skills. |
 | `board.json` | execution state | fresh window | Position, ordered cards, carry-forward. |
+| `BACKLOG.proposed.json` | candidate backlog | human / proposal tooling | Draft split; not executable or published. |
 | `BACKLOG.md` | generated reference | human | Read-only board summary. |
 | `DESIGN.md` | reference | window shipping UI | Binding visual / experiential tokens and rules. |
 | research / design notes | reference | `plan` / `grill` / `design` / `iterate` | Cited findings. Claims only. |
@@ -85,7 +86,8 @@ Good:
 **Board and generated backlog**
 
 Execution descriptions, order, gates, stages, Next action and carry-forward belong to board.json.
-Use validated helper operations with the current revision. BACKLOG.md is generated read-only;
+Refine/iterate save a proposal and obtain acceptance before creating or replacing executable cards.
+PLAN remains rationale-only. Use validated helper operations with the current revision. BACKLOG.md is generated read-only;
 never hand-edit or parse it to drive execution. Detailed phase plans remain Markdown.
 
 **Next action:** `/junji refine`

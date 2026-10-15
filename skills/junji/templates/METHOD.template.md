@@ -11,15 +11,39 @@ the driver supplies these operations inside the sandbox. No second executable is
 
 Use `junji-board show`; take its revision. Mutate through apply --revision N --input FILE,
 where FILE is a JSON patch containing effort fields (next_action/carry_forward/title), cards keyed
-by phase_id (preserve omitted fields), and optional order (all phase IDs exactly once).
+by phase_id with status/plan/outcome/blocked only (preserve omitted fields). Send minimal patches,
+not full card snapshots. Scope/shape changes require a proposal and acceptance.
 Use status PN planning|building|sealing|done --revision N for stage transitions. Stale revisions
 require rereading and reconsideration. Never reset a malformed board or read summary as fallback.
-New cards get stable identities and todo state. Runtime tier/strategy changes belong in Yokai YAML.
+Accepted new cards get stable identities and todo state. Runtime tier/strategy changes belong in Yokai YAML.
+
+## Backlog review boundary
+
+Begin creates an empty effort. Refine/iterate propose the complete card order using `propose
+--revision N --input FILE`, then `show-proposal`. Candidate JSON contains `cards`: unchanged entries
+are {"existing":"P0"}; new entries have label/title/description, optional depends_on (labels or existing
+IDs) and gated. Labels are temporary; do not assign new P<digits> IDs. Substantial replacements list
+`retire` entries with phase_id and an accurate reason. Wording-only corrections use an existing
+entry's correction object with reason and optional title/description. Started/completed cards stay intact.
+
+Wait for the user to accept this exact proposed split before `accept-proposal --revision REVIEWED_N
+--proposal REVIEWED_ID`. A request for fewer splits is a revision, not acceptance. Drafts persist in
+BACKLOG.proposed.json and create no executable cards or retirement records. Acceptance allocates IDs,
+resolves dependencies, retires replaced content and regenerates BACKLOG.md. If the board changed,
+refresh with propose using the current revision and saved proposal as input, then obtain acceptance
+again. `discard-proposal --revision CURRENT_N --proposal ID` preserves accepted cards and restores the
+previous next action. Never publish a draft or use apply to bypass decomposition review.
+
+While review is pending, finish only an already in-flight card, then halt at the boundary. Do not
+start another todo card, accept while a phase is in flight or consolidate an unresolved review.
+An empty board is awaiting acceptance, not a completed effort. Phase status/outcome/link updates
+continue normally; the tool preserves the pending review pointer despite phase completion.
 
 ## Per-phase protocol
 
 1. Load CONTEXT including Skills, the active board effort and carry-forward, and DESIGN if present.
-   Resume an in-flight card before selecting the first todo card. Two in-flight cards halt.
+   Resume an in-flight card before selecting the first todo card. Pending review halts before
+   selecting another card; an empty effort waits for backlog acceptance. Two in-flight cards halt.
    Dependencies must be done; explicit blocking reasons halt. Respect human gates and standing
    branch/push directives. If every card is done, point to consolidate or iterate for new work.
 2. Read the card description and binding facts. Load matching Must Skills for this role; do not
@@ -47,7 +71,7 @@ New cards get stable identities and todo state. Runtime tier/strategy changes be
 The board works offline. When publication is enabled, standalone Junji runs
 `junji-board visibility verified --phase PN --commit HEAD_SHA` after verification/commit, then `junji-board visibility sync`. During
 Yokai execution, never publish from coding turns; the supervisor and host worker own publication.
-New cards publish automatically under the reviewed parent; this does not authorize their execution.
+Accepted new cards publish automatically under the reviewed parent; this does not authorize their execution.
 Failures stay pending and never change engineering results. Never store credentials in the repo.
 
 ## Report

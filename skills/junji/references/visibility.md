@@ -12,8 +12,8 @@ operations. It uses the same Rust library as the driver and the host OS credenti
 requires no Yokai executable. Use browser OAuth only during
 interactive setup. Never store tokens in repository files or transfer them into a sandbox.
 
-After refine, review the board and profile and publish parent then all children. Opt-in authorizes
-automatic publication of later discovered cards using the same configuration. Publishing a new card
+After the user accepts the refined backlog, review the accepted board and profile and publish parent then all children. Opt-in authorizes
+automatic publication of accepted later discovered cards using the same configuration. Publishing a new card
 does not authorize implementing it or bypassing its human gate. External edits never change local
 scope or verification automatically. Import only explicitly selected external work.
 
@@ -29,3 +29,6 @@ Uncertain creation can be reconciled with resolve --input FILE: select an existi
 confirm_absent after checking Jira, naming phase_id (null for the effort parent). Review is interactive;
 only then may a subsequent sync retry creation. Pre-registered clients may specify --redirect-port.
 Connection setup also accepts additional field defaults required by the selected board's filter.
+
+BACKLOG.proposed.json is never a publication input. Empty, unaccepted efforts create no remote
+hierarchy. Pending review still allows progress publication for previously accepted cards.

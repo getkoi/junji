@@ -20,8 +20,8 @@ Chat like `references/chat.md`. Write `PLAN.md` as **explanation** and `CONTEXT.
    Pure backend / library / non-UI work: skip entirely.
 1c. **Optional external visibility.** During task analysis ask whether this effort should publish to
    Jira. Default off; the local board remains mandatory and works offline. Record the user's intent
-   among the project facts. If requested, follow references/visibility.md after refine produces the
-   initial card hierarchy for review; do not create remote issues during planning.
+   among the project facts. If requested, follow references/visibility.md after the user accepts refine's
+   proposed backlog and reviews its initial hierarchy; do not create remote issues during planning.
 2. **Reason.** Work out the approach: major moving parts, how the new thing plugs in, what stays out. Form a
    position *before* grilling it.
 3. **Grill.** Follow **`verbs/grill.md`** (same method as the standalone `grill` verb: frontier rounds).

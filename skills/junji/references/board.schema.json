@@ -180,6 +180,36 @@
             "additionalProperties": true
           },
           "default": []
+        },
+        "pending_proposal": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "board_revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "previous_next_action": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "digest",
+            "board_revision",
+            "previous_next_action"
+          ],
+          "additionalProperties": false
         }
       },
       "additionalProperties": true

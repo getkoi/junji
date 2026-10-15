@@ -4,8 +4,8 @@ Read `references/board.md` first. Execution-state changes use validated board op
 Heading/tag examples describe the generated summary; never edit it.
 
 After every phase is `[done]`, add more work without consolidating. **Method artifacts only: write no product code.**
-One call may append N independently-verifiable phases; the grilling *is* the plan (the exploration writes
-the phase how-to contracts). Execution is `/junji next` or yokai.
+Grill a candidate delta, save its proposed split, and wait for acceptance before adding executable
+phases or their how-to contracts. Execution is `/junji next` or yokai.
 
 Chat like `references/chat.md`. Write phase plans as **how-to contracts** and BACKLOG as **reference**
 per `references/docs.md`. Crystallize locks like `verbs/grill.md`.
@@ -13,12 +13,12 @@ per `references/docs.md`. Crystallize locks like `verbs/grill.md`.
 **Guard.** Stop unless all of these hold: name the miss and the verb to run instead:
 
 - `.koi/run/PLAN.md` exists (else `/junji plan`).
-- `.koi/board.json` has **at least one** phase heading (else `/junji refine`).
+- `.koi/board.json` has **at least one** accepted card (else `/junji refine`).
 - **Every** phase is `[done]`: no `[todo]`, no in-flight tag (`[planning]` / `[building]` / `[sealing]`)
   (else `/junji next` / yokai). Serial: illegal while any phase is not done.
 - The user named a request. Missing → ask what to iterate, one line, stop.
 
-`iterate` never occupies Next action.
+Pending proposal review points Next action to /junji refine; iterate itself never occupies it.
 
 1. **Gather.** Read `.koi/run/CONTEXT.md` (including **Skills**), `.koi/run/PLAN.md`, `.koi/board.json` (Carry-forward +
    compacted phases). If `.koi/run/researches/` exists, **read every research note**. If
@@ -37,16 +37,17 @@ per `references/docs.md`. Crystallize locks like `verbs/grill.md`.
    before each of those edits and replace a span copied from that read. Do not rewrite PLAN's
    problem/approach unless the goal is reframed (standing override). Record bar changes in CONTEXT;
    Yokai must review its gate again before running. Visual locks → `.koi/run/DESIGN.md`.
-5. **Append executable cards through junji-board.** Continue `P{max+1}` (yokai only parses `P<digits>`). For each settled phase:
-   - Append a card; its generated heading is: `### [todo] PN - title` (or `### [gated] [todo] PN - title`).
-     Then one-line goal, source files, `depends_on` where it isn't obvious. Runtime tags are optional;
-     preserve any annotations on existing phases without copying them onto new headings.
-   - Write `.koi/run/phases/phase-NN-<slug>.md` from `templates/phase-plan.template.md`: full how-to
-     contract (**Explicitly out**, numbered Approach). Pad NN to match siblings (usually two digits;
-     yokai match is padding-robust). Never write under repo-root `phases/`. Do not mirror strategy or
-     tier on the phase-plan `Status:` line.
-   Re-read new headings for dependency order and human gates. Write **no product code**.
-6. **Commit.** Conventional commit of the working-folder artifacts (PLAN / CONTEXT / BACKLOG / new phase
-   files, DESIGN if touched). Honor Standing overrides (e.g. commit locally, never push). No product tree.
-7. **Advance the pointer & stop.** Set `the active effort next_action in .koi/board.json` to `/junji next`. First line:
-   `Next action: /junji next`. Then the new phase goals (chat cap 5; full list in BACKLOG).
+5. **Propose the delta.** Follow refine's proposal/acceptance workflow in references/board.md. The
+   complete order keeps all completed cards unchanged, followed by new work with temporary labels.
+   Save with propose, render it and wait for acceptance of the exact candidate. Grilling a delta
+   or agreeing on strategy does not implicitly accept a newly written slice list. Revisions update
+   the proposal without creating executable cards, phase-plan files or retirement records.
+6. **Materialize accepted work.** After explicit acceptance, accept-proposal checks the reviewed
+   revision and identity, allocates fresh phase IDs and points to /junji next. If the board changed,
+   refresh/review and obtain acceptance again. Only then write new phase-plan Markdown using the
+   assigned IDs, with Explicitly out and a numbered Approach; link plans with validated operations.
+   Runtime choices stay with their owner. No product code. Discard cancels the pending review.
+7. **Commit and stop.** Conventional commit of accepted board and method artifacts, honoring Standing
+   overrides. First line: `Next action: /junji next`. Then the new goals (chat cap 5; full accepted
+   list in BACKLOG.md). Draft work never publishes; existing adapter authorization publishes accepted
+   additions automatically without authorizing their execution or bypassing human gates.

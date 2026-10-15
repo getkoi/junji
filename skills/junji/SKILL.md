@@ -25,6 +25,7 @@ Read [references/board.md](references/board.md) for every stateful verb.
 
 - `.koi/board.json`: mandatory project board; efforts and executable cards, execution state,
   Next action and carry-forward. One active effort per repository; completed effort history persists.
+- `.koi/run/BACKLOG.proposed.json`: durable candidate split, with temporary labels; never executable.
 - `.koi/run/BACKLOG.md`: generated read-only summary. Never execution input.
 - `.koi/run/CONTEXT.md`: stable facts, locked decisions, Skills, verification bar and overrides.
 - `.koi/run/PLAN.md`: strategy and rationale. CONTEXT wins for execution; PLAN wins for rationale.
@@ -60,7 +61,7 @@ Read that verb's reference before executing it:
 
 No argument: begin if there is no active effort; otherwise follow active effort next_action.
 Explicit 'do the next task' means next. Legacy projects require explicit migration before execution.
-The progression is begin → plan → refine → next… → consolidate. Optional research/design/grill/brief
+The progression is begin → plan → refine → accept the split → next… → consolidate. Optional research/design/grill/brief
 do not advance position. Iterate grills a post-execution delta and points back to next.
 
 ## Rules
@@ -69,6 +70,10 @@ One card per next. Read CONTEXT including Must Skills; load only matching Must s
 Read DESIGN when present as a binding contract. Keep phase plans Markdown, with Explicitly out,
 verification commands and self-contained outcomes. Follow standing branch/push directives and human
 gates. Importing plans, creating remote issues or setting up a driver never authorizes gated actions.
+
+Refine/iterate propose and wait for acceptance before changing executable cards. Revisions allocate no
+new card identities until acceptance. Pending review pauses at the next phase boundary; drafts never
+publish. Requests for fewer splits are revisions, not approval.
 
 All execution changes use junji-board operations. Never write headings or pointer changes into the
 summary. Begin copies METHOD without rewriting it; consolidate preserves durable project home.

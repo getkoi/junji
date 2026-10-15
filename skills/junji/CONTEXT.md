@@ -376,3 +376,11 @@ dependencies, human gates, progress, Next action and carry-forward; external int
 
 **Card**:
 One independently verifiable execution phase on the board, with a stable identity and linked plan.
+
+**Backlog proposal**:
+A candidate split of work, using temporary labels, that cannot execute or publish before the user
+accepts it. Revisions create no executable card identity or retirement history.
+
+**Backlog acceptance**:
+Agreement to the exact proposed split. It materializes executable cards and preserves the full
+history of accepted unstarted work that is replaced.

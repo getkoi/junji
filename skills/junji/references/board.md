@@ -7,14 +7,40 @@ Use the standalone `junji-board` Rust binary. Install it from a Koi checkout wit
 settings for method operations. Local edits need no Python runtime, credentials or network.
 Yokai links the same library and supplies equivalent `yokai board` operations.
 
-Read with `junji-board show`. Apply mutations using that exact revision:
-`junji-board apply --revision N --input patch.json`.
-The JSON patch may contain:
-- effort: title, next_action, carry_forward.
-- cards: phase_id, title, description, gated, depends_on, plan, outcome, status and blocked reason.
-  Existing card patches preserve omitted fields and identity; new cards receive stable IDs and todo
-  status. Card phase IDs use P<digits>. Runtime choices stay in Yokai YAML.
-- order: the complete ordered list of phase IDs, with no omissions or duplicates.
+Read accepted work with `junji-board show`. Read a pending draft with `show-proposal`.
+Refine and iterate always propose first, wait for the user's acceptance, then materialize cards:
+
+```sh
+junji-board propose --revision N --input candidate.json
+junji-board show-proposal
+junji-board accept-proposal --revision REVIEWED_N --proposal REVIEWED_ID
+junji-board discard-proposal --revision CURRENT_N --proposal REVIEWED_ID
+```
+
+Candidate input has a complete `cards` order and optional `retire` entries. New cards use
+`{"label":"foundation","title":"Foundation","description":"Shared tokens","depends_on":[],"gated":false}`.
+Labels are temporary and cannot be P<digits>. Keep accepted cards with `{"existing":"P0"}`.
+Dependencies reference existing IDs or new labels. Retire a replaced unstarted card with
+`{"phase_id":"P1","reason":"Scope merged into foundation"}`; every accepted card must be kept
+or explicitly retired. Wording-only corrections use an existing entry's `correction` object with
+`reason` and optional title/description. Retain started/completed cards unchanged. Existing todo
+entries may explicitly update depends_on/gated. Runtime choices stay in Yokai YAML.
+
+The tool owns .koi/run/BACKLOG.proposed.json and binds it to a pending marker on the effort.
+Repeated proposal revisions create neither card identities nor retirement records. Only acceptance
+assigns permanent IDs, including all historical retired IDs when selecting the next number.
+It applies exactly the reviewed content atomically and regenerates BACKLOG.md. Intervening board
+changes require refresh/review and acceptance again: `propose --revision CURRENT --input
+.koi/run/BACKLOG.proposed.json` can refresh the saved candidate. Never silently retry stale approval.
+Discard restores the prior next action and preserves accepted work, even if the draft file is lost.
+Both resolution operations remove the proposal artifact. An empty effort is unaccepted, not complete.
+
+Pending review lets an in-flight card finish, then pauses execution. Do not start another card,
+accept during an in-flight phase or publish draft work. The next action stays /junji refine until
+review resolves. Existing boards without a pending marker remain accepted. Ordinary apply/status
+operations update stages, outcomes, plan links, blocking facts and carry-forward. Apply rejects
+new cards, title/description edits, removals, order and dependency/gate edits; send minimal progress
+patches, not full card snapshots. Those changes require a proposal/acceptance workflow.
 
 Use `status P0 planning|building|sealing|done --revision N` at method boundaries. A stale update
 requires rereading and reconsideration; never blindly retry. A summary rendering error does not

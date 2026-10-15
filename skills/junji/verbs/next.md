@@ -2,7 +2,9 @@
 
 Read references/board.md and the copied METHOD. Load CONTEXT including Skills, the active board effort
 and existing phase plan. Resume the in-flight card, otherwise select the first todo card. Dependencies
-must be done; explicit blocking reasons halt. Honor gated actions and standing overrides.
+must be done; explicit blocking reasons halt. Pending proposal review permits only finishing an
+already in-flight card, then halts before another starts. An empty effort awaits acceptance; it is
+not complete. Do not accept or discard review implicitly. Honor gated actions and standing overrides.
 
 If no phase plan exists, set planning with the current revision, research this card only and write
 .koi/run/phases/phase-NN-slug.md from the phase-plan template (P0 uses phase-00). Preserve Explicitly
@@ -16,7 +18,8 @@ Set sealing, write the plan Outcome, and use junji-board apply to record the car
 outcome, phase-plan link and carry-forward. Set next_action to /junji next while cards remain, else
 /junji consolidate. Commit all authorized deliverables and method artifacts, excluding runtime sync
 receipts and regenerable noise; follow branch/push directives. Verify commit and clean product state.
-The board remains authoritative; BACKLOG.md is only the generated view.
+The board remains authoritative; BACKLOG.md is only the generated view. Pending review keeps
+next_action at /junji refine even after the current card finishes.
 
 Standalone publication: after the green bar and required commit/clean-tree checks, record verified
 completion and sync per references/visibility.md. During a Yokai run, the supervisor owns publication.
