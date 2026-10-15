@@ -9,8 +9,14 @@ Keep all provider data outside canonical cards, in .koi/adapters/jira.json and .
 
 Use `junji-board visibility` for setup, login, discover, review, import, sync, status and verified
 operations. It uses the same Rust library as the driver and the host OS credential store; it
-requires no Yokai executable. Use browser OAuth only during
-interactive setup. Never store tokens in repository files or transfer them into a sandbox.
+requires no Yokai executable. Browser OAuth is the default interactive login. If the user chooses
+a personal API token, an organization admin must allow API-token authentication in the Rovo MCP
+server. Use `junji-board visibility login --auth-method api-token --site https://example.atlassian.net
+--cloud-id CLOUD_UUID`, then setup. The user enters their account email and token in the hidden CLI
+prompt, never in chat or command arguments. Request only read, write and search Jira agent-interface
+scopes. Login checks read access before replacing credentials in the host OS store. API-token setup
+uses the explicit site/cloud ID rather than OAuth grant discovery. `visibility login --auth-method
+oauth` switches back. Never store tokens in repository files or transfer them into a sandbox.
 
 After the user accepts the refined backlog, review the accepted board and profile and publish parent then all children. Opt-in authorizes
 automatic publication of accepted later discovered cards using the same configuration. Publishing a new card
