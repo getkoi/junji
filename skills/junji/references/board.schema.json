@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Koi execution board v1",
+  "description": "Validated operations additionally enforce identities, active effort, one in-flight card, dependency references/cycles and repo-relative plan paths.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "revision",
+    "project_id",
+    "efforts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "active_effort": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "efforts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/effort"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "card": {
+      "type": "object",
+      "required": [
+        "id",
+        "phase_id",
+        "title",
+        "description",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase_id": {
+          "type": "string",
+          "pattern": "^P[0-9]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "todo",
+            "planning",
+            "building",
+            "sealing",
+            "done"
+          ]
+        },
+        "gated": {
+          "type": "boolean",
+          "default": false
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^P[0-9]+$"
+          },
+          "default": []
+        },
+        "blocked": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "plan": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "outcome": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "legacy_strategy": {
+          "enum": [
+            null,
+            "plain",
+            "swarm"
+          ]
+        },
+        "legacy_tier": {
+          "enum": [
+            null,
+            "low",
+            "medium",
+            "high",
+            "ultra"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "effort": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "next_action",
+        "cards"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string"
+        },
+        "next_action": {
+          "type": "string"
+        },
+        "carry_forward": {
+          "type": "string",
+          "default": ""
+        },
+        "archived": {
+          "type": "boolean",
+          "default": false
+        },
+        "deliverable": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/card"
+          }
+        },
+        "retired_cards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "card",
+              "reason"
+            ],
+            "properties": {
+              "card": {
+                "$ref": "#/$defs/card"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": true
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,18 +1,21 @@
 # Verb: `research` — primary-source notes for plan and grill
 
+Read `references/board.md` first. Execution-state changes use validated board operations.
+Heading/tag examples describe the generated summary; never edit it.
+
 Investigate open **factual** questions against high-trust primary sources and capture each as a Markdown
 note under `.koi/run/researches/`. Notes are context for `plan` and `grill`: not decisions, not a
 phase plan, and not the same as **phase research** inside `next` (that step only opens the files a phase
 already named).
 
 **On demand.** Optional; run zero, one, or many times (batch or sequential). Does **not** advance
-`.koi/run/BACKLOG.md › Next action`. Does not write `PLAN.md` or lock decisions into `CONTEXT.md`.
+`the active effort next_action in .koi/board.json`. Does not write `PLAN.md` or lock decisions into `CONTEXT.md`.
 
 Chat like `references/chat.md`. Write each note as **reference** (claims only) per `references/docs.md`.
 
 ## Prerequisites
 
-- Requires `.koi/run/BACKLOG.md` (a real `begin`). If missing, say so and stop: point at `/junji begin`.
+- Requires `.koi/board.json` (a real `begin`). If missing, say so and stop: point at `/junji begin`.
   Do **not** scaffold the working folder from this verb.
 - Does **not** require `PLAN.md`.
 

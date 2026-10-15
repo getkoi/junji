@@ -24,14 +24,14 @@ A failed valid check is kept and reported; it is never replaced with an easier b
 
 **Precondition.** The driver presumes the project is already **planned**: a human (or an earlier step) ran
 `begin` → `plan` → `refine` (and later `/junji iterate` if they wanted more work after the backlog emptied),
-so `.koi/run/` exists with a populated phase list. The driver only loops `next`: it never creates the project strategy or backlog, grills,
+so `.koi/board.json` has a populated active effort and `.koi/run/` holds method documents. The driver only loops `next`: it never creates the project strategy or backlog, grills,
 iterates, or briefs. When no `[todo]` remain it surfaces consolidate (destructive); the human may `/junji iterate` instead.
 
 ## The loop
 
 This is a minimal custom-driver example. The shipped Yokai driver uses ACP and enables recovery by default, as described below.
 
-1. Parse `.koi/run/BACKLOG.md`; find first_runnable (`[planning]`/`[building]`/`[sealing]`, else first `[todo]`). None left → go to step 4.
+1. Parse `.koi/board.json`; find first_runnable (`[planning]`/`[building]`/`[sealing]`, else first `[todo]`). None left → go to step 4.
 2. If it's `[gated]`, **halt for a human**: never auto-run an irreversible/terminal phase *unless a human
    explicitly pre-authorized it*, such as `yokai --allow-gated`. Bare Yokai halts at human gates.
    Standing directives remain binding even with that flag.
@@ -45,7 +45,7 @@ This is a minimal custom-driver example. The shipped Yokai driver uses ACP and e
    ```
 
    Then **verify the contract held**:
-   - the phase is now `[done]` in `.koi/run/BACKLOG.md`,
+   - the phase is now `[done]` in `.koi/board.json`,
    - a new commit exists (`git HEAD` advanced),
    - the verification bar from `.koi/run/CONTEXT.md` re-runs green (via every `.koi/sensors/*.sh`).
 
@@ -106,7 +106,7 @@ require replacements, so two is not a hard cap. Normal mode still uses fresh ses
    iteration budget is spent (omit `max_iters` for unlimited). The judge can **veto** convergence (drive another iteration) but never
    **grant** it: only the gate decides green. If the loop can't converge, **recovery** (default on)
    Diagnoses and may grant another Build; `recovery: false` **halts before Seal** and leaves `.koi/run/FEEDBACK.md`.
-3. **Seal**: an agent turn does steps 6-7: compact the backlog (`[done]`, carry-forward, Outcome) and make
+3. **Seal**: an agent turn does steps 6-7: update the board completion claim, carry-forward and Markdown Outcome and make
    the one commit.
 
 Yokai runs over the shared tori Connector. The driver wires the phase

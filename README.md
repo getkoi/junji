@@ -43,3 +43,11 @@ python3 scripts/check_package.py
 ## License
 
 [MIT](LICENSE)
+
+## Execution board
+
+The mandatory .koi/board.json is execution state; BACKLOG.md is a generated read-only summary.
+The standalone `junji-board` Rust binary provides atomic revision-checked updates without
+Yokai. Install it from a Koi checkout with `./install.sh --board-only`; both tools link the same
+`koi-board` library. Local execution requires no Python runtime. Existing efforts require explicit migration. Detailed phase plans remain Markdown. External
+publication is optional; the first adapter translates efforts/cards to Jira issue hierarchies.

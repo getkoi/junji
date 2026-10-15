@@ -1,6 +1,6 @@
 # Phase NN — <title>
 
-Status: see this phase's heading in `BACKLOG.md` (source of truth; do not mirror tags here).
+Status: see this phase's card in `.koi/board.json` (source of truth; do not mirror tags here).
 
 > **How-to contract** for one slice: not an essay, not a tutorial. Write it in step 3 of `next`
 > (skip if the file already exists), or during `iterate` before `next`/yokai runs. Fill **Outcome** in
@@ -45,4 +45,4 @@ What "passing" concretely means for this slice.>
 
 - [ ] <maps 1:1 to a verification-bar command or a concrete deliverable>
 - [ ] Full verification bar exits 0 (language gates + repo gates).
-- [ ] Backlog compacted (this phase `[done]`; carry-forward updated); committed per standing overrides.
+- [ ] Board card completed (carry-forward updated; summary regenerated); committed per standing overrides.

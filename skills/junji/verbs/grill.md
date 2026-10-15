@@ -1,5 +1,8 @@
 # Verb: `grill` — grilling method (SSOT)
 
+Read `references/board.md` first. Execution-state changes use validated board operations.
+Heading/tag examples describe the generated summary; never edit it.
+
 Junji's relentless interview for sharpening a plan **and** building the project's domain model as it goes.
 Self-contained: no external skill required. Same method in four places:
 
@@ -7,7 +10,7 @@ Self-contained: no external skill required. Same method in four places:
 - **Inside `design`** (analyse): settle unsettled visual / experiential direction, or which of several
   design skills to follow, before consolidating `.koi/run/DESIGN.md`.
 - **Inside `iterate`**: harden a post-execution request, including how to slice it into phases, before
-  writing BACKLOG headings and phase contracts.
+  writing board cards and phase contracts.
 - **As the `grill` verb**: a standalone pass any time the plan feels soft, scope is fuzzy, or terminology
   is drifting.
 

@@ -13,7 +13,8 @@ the writing SSOT.
 |---|---|---|---|
 | `PLAN.md` | explanation | human | Why this approach. Argument + rejected alternatives. |
 | `CONTEXT.md` | reference | fresh window | Binding facts a window obeys. No rationale. Includes Skills. |
-| `BACKLOG.md` | reference | fresh window | Position: Next action, phase list, carry-forward. |
+| `board.json` | execution state | fresh window | Position, ordered cards, carry-forward. |
+| `BACKLOG.md` | generated reference | human | Read-only board summary. |
 | `DESIGN.md` | reference | window shipping UI | Binding visual / experiential tokens and rules. |
 | research / design notes | reference | `plan` / `grill` / `design` / `iterate` | Cited findings. Claims only. |
 | `METHOD.md` | how-to | `next` window | Recipe for one phase. Byte-copied by `begin`; never rewritten per project. |
@@ -81,16 +82,12 @@ Good:
 - **Parser:** old parser stays on the read path until P4; new parser writes a parallel tree.
 ```
 
-**BACKLOG (reference)**
+**Board and generated backlog**
 
-Bad:
-```
-We had a productive session. The next thing we should probably think about is refining, unless
-you'd rather grill more.
-```
+Execution descriptions, order, gates, stages, Next action and carry-forward belong to board.json.
+Use validated helper operations with the current revision. BACKLOG.md is generated read-only;
+never hand-edit or parse it to drive execution. Detailed phase plans remain Markdown.
 
-Good:
-```
 **Next action:** `/junji refine`
 
 ### [todo] P0 - Port CLI entrypoint

@@ -1,23 +1,27 @@
 # Verb: `begin` — scaffold the working folder + survey the repo
 
+Read `references/board.md` first. Execution-state changes use validated board operations.
+Heading/tag examples describe the generated summary; never edit it.
+
 Create the working folder and record observable facts from the repository. Leave strategy, verification requirements, and locked decisions for `plan`. Do not read the source document during `begin`.
 
 You can run `begin` when `.koi/run/` is missing, contains a legacy setup stub, or already holds project state. Preserve existing backlogs and decisions as described below.
 
 Chat like `references/chat.md`. Write CONTEXT as **reference** per `references/docs.md`. Do not author
-METHOD.md or BACKLOG.md: copy them.
+METHOD.md: copy it. Generate BACKLOG.md through the board helper.
 
-1. **Ensure `.koi/run/`.** Create `.koi/` and `.koi/run/` if absent. No executable installation,
-   runtime settings, or sensor scripts are required. Leave all driver-owned files and existing
+1. **Check board tooling and ensure `.koi/run/`.** Run `junji-board --version`. If missing, install
+   it from a Koi checkout with `./install.sh --board-only`. Create `.koi/` and `.koi/run/` if absent.
+   No Yokai executable, runtime settings, or sensor scripts are required. Leave all driver-owned files and existing
    sensors alone, including legacy configuration awaiting migration. Never regenerate an active effort.
 2. **Copy, do not read, do not rewrite.** From this skill's `templates/` (sibling of `verbs/`), copy
    into `.koi/run/` (never the repo root or `.koi/` root). Use a filesystem copy (`cp`). Do **not**
    Read `METHOD.template.md` or `BACKLOG.template.md` into this context. Do not substitute a project
    name. Do not edit the copies.
    - If `.koi/run/METHOD.md` is absent: `METHOD.template.md` → `.koi/run/METHOD.md`.
-   - If `.koi/run/BACKLOG.md` is absent: `BACKLOG.template.md` → `.koi/run/BACKLOG.md`. **Never
-     overwrite** a BACKLOG that already exists (it may hold a live phase list). The template is
-     begin-ready: `Next action: /junji plan`, empty Tasks.
+   - Explicitly migrate legacy BACKLOG state if it exists without a board. Do not initialize over it.
+   - Otherwise use junji-board init --title TITLE only when no active effort exists. This generates
+     BACKLOG.md. Never copy a summary template or reset an existing effort.
    - If `.koi/run/CONTEXT.md` is missing, or is an untouched legacy `koi init` stub (the title line is
      exactly `# junji — not scaffolded yet` and the file has no project customizations): replace the
      whole file by copying `CONTEXT.template.md` → `.koi/run/CONTEXT.md` (`cp`). That stub is not the

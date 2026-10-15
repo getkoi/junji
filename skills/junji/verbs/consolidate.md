@@ -1,27 +1,17 @@
-# Verb: `consolidate` — collapse the working folder into one repo-native spec
+# Verb: consolidate — archive the effort into its native deliverable
 
-Replace the execution record with the *documentation* a later reader wants. `.koi/run/phases/` is a
-*build log*; the deliverable is the spec. **Destructive to the working folder**: only `.koi/run/` is
-removed; durable project home (`sensors/`, `yokai.yml`, …) survives. Git history is the archaeology.
+Read references/board.md. Require an active effort whose cards are all done. Read CONTEXT's
+Deliverable spec model, PLAN rationale, card outcomes/carry-forward and linked phase-plan Outcomes.
+Follow standing branch, push and human-gate instructions; do not execute new product work.
 
-Chat like `references/chat.md`. Write the deliverable per `references/docs.md`: host outline verbatim;
-narrative default is explanation + locked facts, not a changelog. Confirm before collapsing.
-
-1. **Guard.** Refuse unless **every phase is `[done]`**: never collapse a live project. (A `[gated]` terminal
-   phase must already have run on human go-ahead, or been explicitly waived.)
-2. **Read** every `.koi/run/phases/phase-*.md` (especially **Outcome**),
-   `.koi/run/BACKLOG.md › Carry-forward decisions`, `.koi/run/PLAN.md`, and `.koi/run/CONTEXT.md`,
-   including **Deliverable spec model**.
-3. **Render in the repo's spec model.** Produce the document in the **section outline recorded in
-   CONTEXT › Deliverable spec model, verbatim**. Map: **what the system is** + **locked decisions** (settled
-   facts); a **concise phase-by-phase story** (drop risks-that-didn't-fire, scaffolding, acceptance
-   checklists); **carry-forward** folded into design-notes/gotchas. Documentation, not a diff log: no
-   tutorial, no per-phase checklist dump. _(No model recorded: older project? Fall back to explanation +
-   locked facts in that same shape.)_
-4. **Write to the model's home**: location + filename from Deliverable spec model (repo native spec home,
-   else `specs/`), **named for what was delivered, never `SPECIFICATION.md`** (fallback: `specs/<slug>.md`).
-5. **Collapse the working folder.** `git add` the new spec, then `git rm -r .koi/run/` (PLAN, CONTEXT,
-   METHOD, BACKLOG, phases, and driver-owned `yokai.yml`/`ledger.jsonl`/`sessions.jsonl` (and any legacy `config.yml`),
-   all of it) in a **single commit**. Durable project home stays. The deliverable is the only new survivor
-   from the run scaffolding.
-6. **Report.** First line: the new file's path. Confirm `.koi/run/` was collapsed into it.
+1. Harvest the implemented system and settled decisions, not scaffolding or acceptance-checklist
+   dumps. Use the recorded section outline verbatim. Include useful outcomes and carry-forward.
+2. Write the deliverable at the repo-native location and filename recorded in CONTEXT. If no model
+   exists, use narrative explanation plus locked facts. Keep truthful verification results.
+3. Record each card's outcome and plan reference with junji-board apply using the current revision.
+   Run junji-board consolidate --revision N --deliverable REPO_PATH. The helper requires the deliverable
+   to exist and archives plan paths with their commit identities before clearing the active effort.
+4. Only after that succeeds, remove `.koi/run/` using git rm. Never remove the durable board,
+   adapters, sensors, driver settings or visibility receipts. Pending publication survives.
+5. Commit the deliverable, archived board and run-folder removal, respecting standing directives.
+   Report the deliverable path and verification results. Further work starts with begin.

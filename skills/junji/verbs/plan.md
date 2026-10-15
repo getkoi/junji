@@ -1,5 +1,8 @@
 # Verb: `plan` — turn the source into PLAN.md and define the bar
 
+Read `references/board.md` first. Execution-state changes use validated board operations.
+Heading/tag examples describe the generated summary; never edit it.
+
 The thinking verb. Takes a source doc or rough idea and produces the strategy after a reasoning + grilling
 pass. **Load-bearing decisions happen here.** Writes `.koi/run/PLAN.md` and fills `.koi/run/CONTEXT.md`.
 
@@ -15,6 +18,10 @@ Chat like `references/chat.md`. Write `PLAN.md` as **explanation** and `CONTEXT.
    desktop, TUI, docs UI) **and** `.koi/run/DESIGN.md` is missing, follow **`verbs/design.md`** now (or
    instruct the user to `/junji design …` with references) **before** locking surface-related decisions.
    Pure backend / library / non-UI work: skip entirely.
+1c. **Optional external visibility.** During task analysis ask whether this effort should publish to
+   Jira. Default off; the local board remains mandatory and works offline. Record the user's intent
+   among the project facts. If requested, follow references/visibility.md after refine produces the
+   initial card hierarchy for review; do not create remote issues during planning.
 2. **Reason.** Work out the approach: major moving parts, how the new thing plugs in, what stays out. Form a
    position *before* grilling it.
 3. **Grill.** Follow **`verbs/grill.md`** (same method as the standalone `grill` verb: frontier rounds).
@@ -87,6 +94,6 @@ Chat like `references/chat.md`. Write `PLAN.md` as **explanation** and `CONTEXT.
    ```
    If the bar changes, record the actual required commands. Yokai must reconcile its executable gate
    through human review before unattended execution; Junji does not edit its configuration or receipt.
-8. **Advance the pointer & stop.** Set `.koi/run/BACKLOG.md › Next action` to `/junji refine`. First line:
+8. **Advance the pointer & stop.** Set `the active effort next_action in .koi/board.json` to `/junji refine`. First line:
    `Next action: /junji refine`. Then the runnable verification commands. **Do not
    decompose into phases: that's `refine`.**

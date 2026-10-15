@@ -1,0 +1,31 @@
+# Optional external visibility — Jira first
+
+The local board always works offline. Ask during plan whether this effort should publish to Jira.
+Existing issues are optional: a run normally creates its remote hierarchy. The effort becomes either
+one issue with subtasks or an epic with tasks; executable cards become the children. Select the
+existing Jira board/project, discover its actual issue types, required fields, columns and workflows,
+and review one target per local state with equivalent remote statuses and allowed source statuses.
+Keep all provider data outside canonical cards, in .koi/adapters/jira.json and .koi/visibility/.
+
+Use `junji-board visibility` for setup, login, discover, review, import, sync, status and verified
+operations. It uses the same Rust library as the driver and the host OS credential store; it
+requires no Yokai executable. Use browser OAuth only during
+interactive setup. Never store tokens in repository files or transfer them into a sandbox.
+
+After refine, review the board and profile and publish parent then all children. Opt-in authorizes
+automatic publication of later discovered cards using the same configuration. Publishing a new card
+does not authorize implementing it or bypassing its human gate. External edits never change local
+scope or verification automatically. Import only explicitly selected external work.
+
+After each standalone next passes the documented bar, required commit and clean-tree checks, record
+`verified --phase PN --commit HEAD_SHA`, then sync. During Yokai execution, its supervisor alone
+records verified completion and its host worker publishes; coding turns must not duplicate that work.
+Failed publication stays pending and never changes engineering results. Ambiguous issue creation
+requires reconciliation before retrying; preserve human workflow edits and show conflicts for review.
+
+Use `junji-board visibility setup` for interactive connection, hierarchy and workflow selection, then sync after the initial refined board is reviewed.
+
+Uncertain creation can be reconciled with resolve --input FILE: select an existing issue_key or
+confirm_absent after checking Jira, naming phase_id (null for the effort parent). Review is interactive;
+only then may a subsequent sync retry creation. Pre-registered clients may specify --redirect-port.
+Connection setup also accepts additional field defaults required by the selected board's filter.

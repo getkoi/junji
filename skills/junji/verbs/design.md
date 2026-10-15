@@ -1,11 +1,13 @@
 # Verb: `design` — visual / experiential contract for the run
 
+Read `references/board.md` first. Execution-state changes use validated board operations.
+Heading/tag examples describe the generated summary; never edit it.
+
 Synthesize a binding **visual / experiential contract** for any human-facing surface this run will ship
 (web, mobile, desktop, TUI, docs UI) into `.koi/run/DESIGN.md`. Context for `plan`, `grill`, `iterate`, and
 `next`: not a phase plan, not module API design, and not code generation.
 
-**On demand.** Optional; run zero, one, or many times. Does **not** advance `.koi/run/BACKLOG.md › Next
-action`. Prefer sub-agents when available; **inline is allowed and equivalent**: same bar, same files.
+**On demand.** Optional; run zero, one, or many times. Does **not** advance the active effort next_action. Prefer sub-agents when available; **inline is allowed and equivalent**: same bar, same files.
 
 Universal: no product-specific MCP, no framework codegen recipes in *this* verb. Atmosphere, tokens, and
 principles in `.koi/run/DESIGN.md`. If `CONTEXT.md › Skills` names an in-repo design `SKILL.md`, **read
@@ -15,7 +17,7 @@ Chat like `references/chat.md`. Write design notes and `DESIGN.md` as **referenc
 
 ## Prerequisites
 
-- Requires `.koi/run/BACKLOG.md` (a real `begin`). If missing, say so and stop: point at `/junji begin`.
+- Requires `.koi/board.json` (a real `begin`). If missing, say so and stop: point at `/junji begin`.
   Do **not** scaffold the working folder from this verb.
 - Does **not** require `PLAN.md`.
 
