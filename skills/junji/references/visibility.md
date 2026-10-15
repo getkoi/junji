@@ -13,10 +13,11 @@ requires no Yokai executable. Browser OAuth is the default interactive login. If
 a personal API token, an organization admin must allow API-token authentication in the Rovo MCP
 server. Use `junji-board visibility login --auth-method api-token --site https://example.atlassian.net
 --cloud-id CLOUD_UUID`, then setup. The user enters their account email and token in the hidden CLI
-prompt, never in chat or command arguments. Request only read, write and search Jira agent-interface
-scopes. Login checks read access before replacing credentials in the host OS store. API-token setup
+prompt, never in chat or command arguments. Choose **Create API token with scopes** for **MCP v2**,
+with only read, write and search Jira agent-interface scopes. Login checks read access before replacing credentials in the host OS store. API-token setup
 uses the explicit site/cloud ID rather than OAuth grant discovery. `visibility login --auth-method
-oauth` switches back. Never store tokens in repository files or transfer them into a sandbox.
+oauth` switches back. Each process reuses its approved credential read across syncs. A newly rebuilt
+macOS binary may require Keychain approval again. Never store tokens in repository files or transfer them into a sandbox.
 
 After the user accepts the refined backlog, review the accepted board and profile and publish parent then all children. Opt-in authorizes
 automatic publication of accepted later discovered cards using the same configuration. Publishing a new card
