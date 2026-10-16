@@ -83,4 +83,7 @@ summary. Begin copies METHOD without rewriting it; consolidate preserves durable
 For communication follow references/chat.md; for document responsibilities follow references/docs.md.
 External visibility is optional; use /junji connect when requested. Read references/visibility.md
 only when requested or enabled. Coding phase agents never publish to Jira; a dedicated host publisher
-applies authorized progress, and the Yokai supervisor owns verified state during driven execution.
+applies authorized progress through its pinned official Atlassian MCP server and host-managed OAuth.
+Koi owns no Jira login or credentials. Require agent-reported actual remote readbacks; direct MCP trusts
+the host/agent, not an independent runtime transport audit. Missing evidence or headless auth stays
+pending while local work continues. The Yokai supervisor owns verified state during driven execution.

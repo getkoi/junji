@@ -51,7 +51,11 @@ The standalone `junji-board` Rust binary provides atomic revision-checked update
 Yokai. Install it from a Koi checkout with `./install.sh --board-only`; both tools link the same
 `koi-board` library. Local execution requires no Python runtime. Existing efforts require explicit migration. Detailed phase plans remain Markdown. External
 publication is optional. After accepting the backlog, use `/junji connect BOARD_URL`: a dedicated
-host agent discovers Jira through MCP, you approve one exact readable summary, then the host
-publisher applies accepted work within that authorization. Saved setup is not verified publication.
-The runtime preserves authorization, local verification proofs and existing bindings. Coding phase
-agents never publish; credentials stay on the host, outside the coding sandbox.
+host agent uses its official Atlassian Jira MCP with host-managed OAuth. Approve one exact readable
+summary, including the publishing host and named server, then the pinned host publisher applies
+accepted work. Saved setup is not verified publication: delivery needs agent-reported actual remote
+readbacks, not narrative success or an independent runtime transport audit. The runtime preserves
+local authorization, verification proofs and bindings. Coding phase agents never publish. Sign in
+through the host's MCP/OAuth UI when needed; Koi owns no Jira login or credentials and offers no
+API-token fallback. Headless auth failures stay pending while local work continues. Existing profiles,
+bindings, remote issues and OS credentials are preserved.

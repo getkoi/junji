@@ -6,95 +6,114 @@ and works offline. Connection and publication never authorize execution or bypas
 
 ## Ownership and trust boundary
 
-A dedicated host connection agent discovers Jira through MCP supplied over ACP. It reads current
-tool schemas and metadata instead of relying on a fixed Rust discovery recipe or hard-coded Jira
-operation selection. A dedicated host publisher applies the reviewed configuration to accepted work.
-The local runtime retains the Profile, exact-review authorization checks, verification proofs,
-stable bindings, pending operations and durable receipts. Agent reasoning does not replace those guards.
+A dedicated host connection agent discovers Jira through the agent host's official Atlassian Jira
+MCP, using host-managed OAuth. A dedicated host publisher applies the reviewed configuration to
+accepted work. Both read actual tool schemas and metadata rather than relying on a fixed Rust
+recipe. The local runtime retains the Profile, exact-review authorization checks, verification
+proofs, publication requests, stable bindings, pending operations and durable receipts.
 
-Coding phase agents never publish to Jira. During Yokai execution, the supervisor owns verified
-state and the dedicated host publisher applies it. A publisher cannot turn a provisional done claim
-into verified completion. Standalone `next` may record local proof only after the documented bar,
-required commit and clean-tree checks pass, then request sync; publication is delegated host work.
+Direct MCP is a trusted host/agent boundary. The runtime checks local authorization, proofs, requests
+and bindings; it cannot intercept every remote write through the host's MCP connection or claim an
+independent transport audit. Read-only preparation and approved publication scope are instructions
+the trusted host agent must obey, not runtime interception guarantees. Require agent-reported actual
+remote readbacks, not narrative success. Receipts record that reported evidence; they are not an
+independent audit of the host's remote traffic.
 
-Credentials stay in the host OS credential store. The runtime's local MCP transport supplies the
-host agent's tool access; it does not hand tokens to the model or coding sandbox. Reuse existing
-credentials and connection state. Only missing/expired authentication requires the user's secure
-host login (browser OAuth or hidden API-token entry). Never request tokens in chat or command
-arguments, store them in repository files, or transfer them into a sandbox. Headless execution
-never opens sign-in. Do not silently change the authentication method to work around a failure.
+Coding phase agents never publish to Jira or receive its MCP server from the runtime. During Yokai
+execution, the supervisor owns verified state and the pinned host publisher applies it. A publisher
+cannot turn a provisional done claim into verified completion. Standalone `next` may record local
+proof only after the documented bar, required commit and clean-tree checks pass, then request sync;
+publication is delegated host work. Local engineering verification remains separate from remote
+observations reported by the publishing agent.
+
+## Host-managed OAuth, not Koi authentication
+
+Connect through the host's own MCP connection/OAuth UI when interactive sign-in is needed. Reuse
+host authentication only when the selected host actually makes it available to the delegated session.
+Koi does not implement Jira login, token storage, refresh or a credential proxy for this path. It is
+OAuth-only, with no API-token fallback. Never request secrets in chat or command arguments, store
+them in repository files, read or copy host credentials, or transfer them to a sandbox.
+
+ACP does not guarantee OAuth reuse or host-config inheritance. An unavailable named server must
+fail explicitly; do not copy credentials, silently choose another server/provider, or fall back to
+Koi-owned authentication. In headless execution, unavailable or expired authentication stays pending:
+never open a surprise browser or onboard. Local execution continues. Preserve existing OS credentials;
+this change does not authorize deleting them. Existing profiles, remote issues and bindings survive
+reconnection; a legacy profile needs reviewed publisher identity before using the new path.
 
 ## Connection protocol — internal agent tooling
 
-Read `verbs/connect.md` for the conversation. The commands below are implementation tools for the
-agent, not an engineer checklist. Standalone Junji uses `junji-board visibility`; the driver exposes
-the compatible `yokai visibility` operations. No Yokai executable is required by standalone Junji.
+Read `verbs/connect.md` for the conversation. These are implementation tools for the agent, not an
+engineer checklist. Standalone Junji uses `junji-board visibility`; the driver exposes compatible
+`yokai visibility` operations. No Yokai executable, setup service or new wizard is required.
 
 1. Read the accepted board, existing profile, bindings and pending state. Ask for the board URL only
    if unknown. Empty, unaccepted efforts create no remote hierarchy. `BACKLOG.proposed.json` is never
    a preparation or publication input.
 2. Run `junji-board visibility prepare --board-url BOARD_URL` on the host and retain its JSON output
-   in a temporary file. The host connection agent discovers the actual project, current account,
-   issue types, required fields, board filter and workflows through MCP. Preparation reads remote
-   data; it does not create issues or save an approved profile.
-3. Resolve technical questions through the host agent's metadata discovery. For unresolved business
-   choices, ask in plain language with named options. The internal `prepare --input REQUEST_FILE`
-   protocol carries `board_url` and `answers`; use the returned question keys and choice values,
-   not invented identifiers. Check filter inclusion and required defaults before marking a filter
-   reviewed. Preserve existing hierarchy and bindings unless the user explicitly reviews a change.
-   Recommend a supported hierarchy appropriate to the effort; do not assume a fixed card-count rule.
-4. Present one exact summary: board/project, parent and child types, accepted cards, Reporter,
-   fields/defaults, board-filter inclusion, status targets/equivalents/allowed sources, existing
-   bindings and automatic publication scope for later accepted cards. Wait for explicit approval.
-   Backlog acceptance and a general opt-in are not approval of an unseen configuration.
+   in a temporary file. Optional `--agent`, `--mcp-server` and `--model` select the publishing host,
+   named server and model on preparation; they are not engineer setup requirements. Prefer the known
+   requesting host agent. For a new connection with no known requesting host, runtime defaults are
+   `claude` and named server `atlassian`; this is not a fallback for legacy or unavailable settings.
+   Save the resolved publishing host, named MCP server and optional model with the reviewed Profile.
+   Reuse saved settings on later review/sync independently of coding candidate fallback and model
+   tiers. Sync cannot override agent, server or model; changes require prepare/review. A legacy
+   publisher missing `mcp_server` requires explicit reconnect. Missing or unavailable identity needs
+   explicit resolution, never an automatic provider switch. The host connection agent discovers
+   project, current account, issue
+   types, required fields, board filter and workflows through the named official MCP server.
+   Preparation requests remote reads only; it creates no issues and saves no approved profile.
+3. Resolve technical questions through metadata discovery. For unresolved business choices, ask in
+   plain language with named options. The internal `prepare --input REQUEST_FILE` protocol carries
+   `board_url` and `answers`; use returned question keys and choice values, not invented identifiers.
+   Check filter inclusion and required defaults before marking a filter reviewed. Preserve existing
+   hierarchy and bindings unless the user explicitly reviews a change. Recommend a supported
+   hierarchy appropriate to the effort; do not assume a fixed card-count rule.
+4. Present one exact summary: publishing host and named MCP server, board/project, parent and child
+   types, accepted cards, Reporter, fields/defaults, board-filter inclusion, status targets/equivalents/
+   allowed sources, existing bindings and automatic publication scope for later accepted cards.
+   Wait for explicit approval. Backlog acceptance and a general opt-in are not connection approval.
 5. Only after approval, run `junji-board visibility review --input PREPARED_FILE --approve APPROVAL_HASH`
-   with the unmodified preparation and its exact `approval_hash`. Let the runtime check freshness and
-   scope. Freshness replays the actual read-only MCP discovery evidence, not nondeterministic
-   recommendations, and checks exact board/profile hashes. If that evidence or the reviewed board or
-   configuration is stale, prepare and review again; never edit a hash or substitute a new revision
-   to bypass approval. Saving creates no issues: **setup saved** is not
-   **publication verified**.
-6. Request `junji-board visibility sync` on the host. This invokes the dedicated host publisher;
-   it is not permission for the orchestrating or coding agent to make independent remote writes.
-   Read `junji-board visibility status` and the returned evidence before reporting confirmed issue
-   links or delivery. Report pending/conflicting work honestly. Without live evidence, state that
-   publication has not been verified.
+   with the unmodified preparation and exact `approval_hash`. The runtime checks exact board/profile
+   hashes and scope against a fresh host-agent read-only discovery report. Compare actual remote
+   readbacks of reviewed metadata, not nondeterministic recommendations. These are agent-reported
+   observations, not runtime-intercepted MCP evidence. Missing evidence stays pending/review; stale
+   board, configuration, host/server identity or metadata requires renewed preparation and approval.
+   Never edit a hash or substitute a revision to bypass approval. Saving creates no issues:
+   **setup saved** is not **publication verified**.
+6. Request `junji-board visibility sync` on the host. This invokes the pinned host publisher; it is
+   not permission for the orchestrating or coding agent to make independent remote writes. Require
+   actual remote readbacks after operations, including issue identity, parent/child relationships,
+   board-filter inclusion and requested status, matched to local requests and durable bindings.
+   Read `junji-board visibility status` and returned receipts before reporting confirmed links or
+   delivery. Narrative success or a locally saved binding alone is insufficient. Missing evidence
+   stays pending/review. If no live publication was checked, say it has not been verified.
 
-Secure login, discovery, review, import and reconciliation operations remain available internally
-for compatibility and support. Optional `--agent` / `--model` select an existing host ACP agent;
-do not require them, technical IDs or profile JSON as engineer setup steps.
-
-### Advanced authentication support
-
-Only when secure login is needed, use the retained host auth flow. Browser OAuth remains the default;
-`junji-board visibility login --auth-method oauth` explicitly selects it. API-token login uses
-`junji-board visibility login --auth-method api-token --site SITE_URL --cloud-id CLOUD_UUID`;
-the connection agent resolves technical site identifiers rather than asking the user to hunt for them.
-The user enters the account email locally; token input is hidden. Rovo MCP API-token auth must
-be allowed by the organization; choose a scoped MCP v2 token with `read:jira:agent-interface`,
-`write:jira:agent-interface` and `search:jira:agent-interface`. Login checks read access before
-replacing credentials. Pre-registered OAuth clients may need `--client-id` / `--redirect-port`.
-These are authentication support tools, not the connection workflow. Never echo credentials.
+Status, import and reconciliation remain internal support operations. No Koi login, OAuth callback,
+API-token or Keychain procedure is part of this workflow. Reconnecting must not reset a profile or
+remove existing credentials, remote issues, partial hierarchies or delivery history.
 
 ## Publication and reconciliation safeguards
 
 Publish the effort parent and accepted cards only within the approved destination and scope. Later
-accepted additions may publish under that authorization; a different destination, hierarchy or scope
-requires renewed review. Existing remote issues and bindings must be reused, not recreated. Imported
-work requires explicit selection and still does not authorize execution. Remote edits never silently
-replace local scope, dependencies, verification requirements or human gates.
+accepted additions may publish under that authorization; a different publishing host, named server,
+destination, hierarchy or scope requires renewed review. Existing remote issues and bindings must
+be reused, not recreated. Imported work requires explicit selection and still does not authorize
+execution. Remote edits never silently replace local scope, dependencies, verification requirements
+or human gates.
 
 Done requires a matching local verification proof, not merely a card marked done, an agent's claim,
 or a Jira status. Standalone local proof uses `verified --phase PN --commit HEAD_SHA` only after the
 bar, required commit and clean-tree checks pass, then requests `junji-board visibility sync` to
-delegate publication to the host agent. During Yokai runs, only the supervisor records proof and
-requests sync; phase agents do neither. Coding phase agents never perform Jira writes. Pending delivery
-never changes engineering results; publication can resume independently, including after consolidation.
+delegate publication to the pinned host agent. During Yokai runs, only the supervisor records proof
+and requests sync; phase agents do neither. Coding phase agents never perform Jira writes. Pending
+delivery never changes engineering results; publication can resume independently after consolidation.
 
 Keep stable creation/comment markers, partial hierarchies, bindings and receipts. Reconcile uncertain
-creation before retrying. The internal `resolve --input FILE` flow can bind an existing `issue_key`
-or authorize retry with `confirm_absent` after checking Jira, naming `phase_id` (null for the parent).
-Do not confirm absence without evidence or silently rebind a card. Preserve unexpected human workflow
+creation before retrying; a timeout, auth failure or missing readback does not prove absence. The
+internal `resolve --input FILE` flow can bind an existing `issue_key` or authorize retry with
+`confirm_absent` after checking Jira, naming `phase_id` (null for the parent). Do not confirm absence
+without actual remote readback evidence or silently rebind a card. Preserve unexpected human workflow
 edits and present conflicts; transitions must respect reviewed targets, equivalents and source states.
 
 Profiles remain in `.koi/adapters/jira.json`; bindings, proofs and receipts remain under

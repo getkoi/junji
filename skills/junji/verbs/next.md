@@ -26,8 +26,11 @@ verified proof after the green bar and required commit/clean-tree checks, then r
 `junji-board visibility sync` per references/visibility.md.
 Sync delegates to the dedicated host publisher; it is not coding-agent Jira access. During a Yokai run,
 the supervisor alone records verified state and requests sync; phase agents do neither. The host
-publisher applies it within the reviewed authorization, preserving bindings; failed delivery does not
-change engineering results. Use `/junji connect` outside the phase for connection review or publication follow-up.
+publisher uses the saved host and named official MCP server with host-managed OAuth, independently
+of coding candidates and model tiers. Require agent-reported actual remote readbacks before reporting
+delivery, not narrative success or an independent transport audit. Missing evidence or headless auth
+stays pending; reconcile uncertain creates before retrying. Failed delivery does not change engineering
+results. Use `/junji connect` outside the phase for connection review or publication follow-up.
 
 Report Phase N of M, Next action and the concrete outcome. When complete, also name iterate as the
 way to add work. Stop after one card.

@@ -22,7 +22,8 @@ Chat like `references/chat.md`. Write `PLAN.md` as **explanation** and `CONTEXT.
    Jira. Default off; the local board remains mandatory and works offline. Record the user's intent
    among the project facts and collect the board URL if known. After the user accepts refine's
    proposed backlog, offer `/junji connect` using verbs/connect.md. The dedicated host agent discovers
-   Jira through MCP and presents one readable exact approval summary. Do not delegate technical
+   Jira through its host's official Atlassian MCP and host-managed OAuth, then presents one readable
+   exact approval summary. Koi owns no Jira login or credentials. Do not delegate technical
    field/ID entry to the user or create remote issues during planning.
 2. **Reason.** Work out the approach: major moving parts, how the new thing plugs in, what stays out. Form a
    position *before* grilling it.

@@ -75,9 +75,17 @@ required commit and clean-tree checks pass, then runs `junji-board visibility sy
 dedicated host publisher. This is delegation, not coding-agent Jira access. During Yokai execution,
 the supervisor alone owns verified state and sync; coding turns do neither. The host publisher applies it
 and accepted additions within the exact reviewed authorization, preserving existing issues and bindings.
-Publication does not authorize execution. Setup saved is not publication verified; delivery needs
-evidence and durable receipts. Failures stay pending without changing engineering results. Credentials
-stay in the host OS store, never the repo or coding sandbox. No installed skill is needed for this handoff.
+Publication does not authorize execution. The publishing host and named official Atlassian MCP server
+stay pinned independently of coding candidates and model tiers. They use host-managed OAuth; Koi owns
+no Jira login, credentials, refresh or proxy and has no API-token fallback. ACP does not guarantee
+OAuth reuse or host-config inheritance: an unavailable named server fails explicitly, without credential
+copying or provider switching. Headless auth stays pending and never opens a browser. Interactive
+sign-in uses the host's MCP/OAuth UI. Preserve existing OS credentials, profiles, bindings and issues.
+Setup saved is not publication verified. Require agent-reported actual remote readbacks matched to
+requests, bindings and receipts; narrative success is insufficient. The runtime validates local
+authorization and proofs but cannot intercept every remote write or claim an independent transport
+audit of direct host MCP. Missing evidence stays pending/review; reconcile uncertain creates before
+retrying. Failures do not change engineering results. No installed skill is needed for this handoff.
 
 ## Report
 

@@ -263,17 +263,43 @@ def check_connect_contract() -> None:
         "verbs/connect.md": [
             "pointer-neutral", "BACKLOG.proposed.json", "explicit approval",
             "existing profiles", "bindings", "setup saved", "publication verified",
-            "references/visibility.md", "host connection agent",
+            "references/visibility.md", "host connection agent", "official Atlassian Jira MCP",
+            "host-managed OAuth", "named MCP server", "coding candidates and model tiers",
+            "ACP does not guarantee OAuth reuse or host-config inheritance",
+            "Do not delete existing OS credentials", "Headless auth failures stay pending",
+            "cannot intercept every remote write", "agent-reported actual remote readbacks",
+            "Narrative success is not evidence", "missing or conflicting evidence stays pending/review",
         ],
         "references/visibility.md": [
             "local runtime retains the Profile", "prepare --board-url", "review --input",
-            "--approve APPROVAL_HASH", "visibility sync", "read-only MCP discovery evidence",
-            "exact board/profile hashes", "host OS credential store", "confirm_absent",
-            "matching local verification proof", "Existing remote issues and bindings",
+            "--approve APPROVAL_HASH", "visibility sync", "exact board/profile hashes",
+            "confirm_absent", "matching local verification proof", "Existing remote issues and bindings",
+            "official Atlassian Jira MCP", "host-managed OAuth", "no API-token fallback",
+            "Koi does not implement Jira login, token storage, refresh or a credential proxy",
+            "ACP does not guarantee OAuth reuse or host-config inheritance",
+            "unavailable named server must fail explicitly", "Preserve existing OS credentials",
+            "never open a surprise browser", "Local execution continues",
+            "cannot intercept every remote write", "independent transport audit",
+            "agent-reported actual remote readbacks", "not narrative success",
+            "Missing evidence stays pending/review", "Reconcile uncertain creation before retrying",
+            "named MCP server", "--mcp-server", "requesting host agent", "`claude`", "`atlassian`",
+            "Sync cannot override agent, server or model", "changes require prepare/review",
+            "missing `mcp_server` requires explicit reconnect", "coding candidate fallback and model tiers",
+        ],
+        "docs/adr/0011-agent-owned-jira-connection.md": [
+            "host-managed OAuth", "official Atlassian Jira MCP", "named MCP server identity",
+            "coding candidates and model tiers", "ACP", "host-config inheritance",
+            "Do not delete existing OS credentials", "no API-token fallback",
+            "cannot intercept every remote write", "agent-reported actual remote readbacks",
+            "Narrative success is insufficient", "Uncertain creates require reconciliation",
         ],
         "templates/METHOD.template.md": [
             "Coding phase agents never call Jira tools", "visibility verified",
             "visibility sync", "supervisor alone", "coding turns do neither",
+            "named official Atlassian MCP server", "host-managed OAuth", "no API-token fallback",
+            "agent-reported actual remote readbacks", "cannot intercept every remote write",
+            "Missing evidence stays pending/review", "reconcile uncertain creates before retrying",
+            "Headless auth stays pending", "Preserve existing OS credentials",
         ],
         "verbs/next.md": [
             "Coding phase agents never call Jira tools", "visibility sync",
@@ -284,6 +310,24 @@ def check_connect_contract() -> None:
         for term in terms:
             if term not in text:
                 fail(f"{origin} is missing the connect contract: {term}")
+
+    # The active workflow must not reintroduce Koi-owned login, token fallback or
+    # transport-captured evidence claims. Negative mentions of old auth remain useful.
+    retired = [
+        r"(?:junji-board|yokai) visibility login\b",
+        r"--auth-method\b", r"--client-id\b", r"--redirect-port\b",
+        r"hidden (?:credential|API-token|token) (?:prompt|entry)",
+        r"local MCP transport", r"host OS credential store",
+        r"Freshness replays the actual read-only MCP discovery evidence",
+    ]
+    for origin in [
+        "verbs/connect.md", "references/visibility.md", "templates/METHOD.template.md",
+        "docs/adr/0011-agent-owned-jira-connection.md", "SKILL.md", "verbs/next.md", "verbs/plan.md",
+    ]:
+        text = " ".join(read_skill(origin).split())
+        for pattern in retired:
+            if re.search(pattern, text, re.I):
+                fail(f"{origin} reintroduces the retired Jira workflow: {pattern}")
 
 
 def main() -> None:

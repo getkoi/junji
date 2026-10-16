@@ -88,7 +88,8 @@ _Avoid_: decompose (only its first mode), breakdown, iterate
 **connect**:
 An optional verb that reviews a Jira destination and publication scope for accepted work. It separates
 connection approval from backlog acceptance and execution authorization, preserves existing remote
-identities, and reports saved setup separately from verified publication. Does not advance Next action.
+identities, and separates saved setup from publication supported by reported remote observations.
+Does not advance Next action.
 _Avoid_: execute, publish-all, driver setup
 
 **next**:
