@@ -68,11 +68,16 @@ continue normally; the tool preserves the pending review pointer despite phase c
 
 ## Optional publication
 
-The board works offline. When publication is enabled, standalone Junji runs
-`junji-board visibility verified --phase PN --commit HEAD_SHA` after verification/commit, then `junji-board visibility sync`. During
-Yokai execution, never publish from coding turns; the supervisor and host worker own publication.
-Accepted new cards publish automatically under the reviewed parent; this does not authorize their execution.
-Failures stay pending and never change engineering results. Never store credentials in the repo.
+The board works offline. Optional connection is `/junji connect`, outside the per-phase protocol.
+Coding phase agents never call Jira tools. When publication is enabled, standalone Junji records local
+proof with `junji-board visibility verified --phase PN --commit HEAD_SHA` after the documented bar,
+required commit and clean-tree checks pass, then runs `junji-board visibility sync` to request the
+dedicated host publisher. This is delegation, not coding-agent Jira access. During Yokai execution,
+the supervisor alone owns verified state and sync; coding turns do neither. The host publisher applies it
+and accepted additions within the exact reviewed authorization, preserving existing issues and bindings.
+Publication does not authorize execution. Setup saved is not publication verified; delivery needs
+evidence and durable receipts. Failures stay pending without changing engineering results. Credentials
+stay in the host OS store, never the repo or coding sandbox. No installed skill is needed for this handoff.
 
 ## Report
 

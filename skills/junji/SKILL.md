@@ -2,8 +2,8 @@
 name: junji
 description: >-
   junji — long multi-session engineering projects (ports, migrations, large refactors, greenfield)
-  driven from an on-disk working folder (.koi/run/) with durable project home at .koi/. Ten verbs:
-  begin, research, design, plan, grill, brief, refine, next, iterate, consolidate. Use when the user
+  driven from an on-disk working folder (.koi/run/) with durable project home at .koi/. Eleven verbs:
+  begin, research, design, plan, grill, brief, refine, connect, next, iterate, consolidate. Use when the user
   wants a phased/junji project, says "do the next task", or invokes /junji (optionally with a verb).
 license: MIT
 user-invocable: true
@@ -55,14 +55,17 @@ Read that verb's reference before executing it:
 | grill | [verbs/grill.md](verbs/grill.md) |
 | brief | [verbs/brief.md](verbs/brief.md) |
 | refine | [verbs/refine.md](verbs/refine.md) |
+| connect | [verbs/connect.md](verbs/connect.md) |
 | next | [verbs/next.md](verbs/next.md) |
 | iterate | [verbs/iterate.md](verbs/iterate.md) |
 | consolidate | [verbs/consolidate.md](verbs/consolidate.md) |
 
 No argument: begin if there is no active effort; otherwise follow active effort next_action.
 Explicit 'do the next task' means next. Legacy projects require explicit migration before execution.
-The progression is begin → plan → refine → accept the split → next… → consolidate. Optional research/design/grill/brief
-do not advance position. Iterate grills a post-execution delta and points back to next.
+The progression is begin → plan → refine → accept the split → next… → consolidate. Optional research/design/grill/brief/connect
+do not advance position. Connect delegates optional Jira setup and publication to a dedicated host agent;
+its authorization never permits executing a card or changing the accepted backlog. Iterate grills a
+post-execution delta and points back to next.
 
 ## Rules
 
@@ -78,4 +81,6 @@ publish. Requests for fewer splits are revisions, not approval.
 All execution changes use junji-board operations. Never write headings or pointer changes into the
 summary. Begin copies METHOD without rewriting it; consolidate preserves durable project home.
 For communication follow references/chat.md; for document responsibilities follow references/docs.md.
-External visibility is optional; read references/visibility.md only when requested or enabled.
+External visibility is optional; use /junji connect when requested. Read references/visibility.md
+only when requested or enabled. Coding phase agents never publish to Jira; a dedicated host publisher
+applies authorized progress, and the Yokai supervisor owns verified state during driven execution.

@@ -26,5 +26,6 @@ a phase is in flight. The accepted board and generated summary stay the executio
 Acceptance allocates IDs, resolves dependencies, retains retired content and advances to /junji next.
 Read `junji-board show` for the assigned IDs. Only then create/link needed phase-plan Markdown and reconcile affected runtime YAML references
 through their owner. Changed locks go in CONTEXT as facts and PLAN as rationale. When publication is
-enabled, review the initial accepted hierarchy/profile before publishing; existing authorization
-publishes accepted additions automatically. Drafts never publish or authorize gated execution.
+requested, hand off initial connection review to `/junji connect`; backlog acceptance is not
+connection approval. The dedicated host publisher handles accepted additions within existing
+authorization. Drafts never publish or authorize gated execution; refine does not write to Jira.

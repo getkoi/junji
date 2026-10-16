@@ -9,6 +9,7 @@ yokai would parse.
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -242,9 +243,53 @@ def check_grill_and_sections(template: str) -> None:
         fail("the grill illustration must not be copied into a project's CONTEXT.md")
 
 
+def check_connect_contract() -> None:
+    """Keep the exported router and agent/runtime ownership boundary in the package."""
+    router = read_skill("SKILL.md")
+    expected = {
+        "begin", "research", "design", "plan", "grill", "brief", "refine",
+        "connect", "next", "iterate", "consolidate",
+    }
+    routes = re.findall(r"^\| (\w+) \| \[verbs/([^]]+)\]\(([^)]+)\) \|$", router, re.M)
+    if len(routes) != len(expected) or {verb for verb, _, _ in routes} != expected:
+        fail("SKILL.md must route all eleven verbs exactly once, including connect")
+    for verb, label, target in routes:
+        if label != f"{verb}.md" or target != f"verbs/{verb}.md" or not (SKILL / target).is_file():
+            fail(f"invalid verb route: {verb} -> {target}")
+    if {path.stem for path in (SKILL / "verbs").glob("*.md")} != expected:
+        fail("verb files and exported routes must match")
+    for origin, terms in {
+        "SKILL.md": ["Eleven verbs:", "verbs/connect.md"],
+        "verbs/connect.md": [
+            "pointer-neutral", "BACKLOG.proposed.json", "explicit approval",
+            "existing profiles", "bindings", "setup saved", "publication verified",
+            "references/visibility.md", "host connection agent",
+        ],
+        "references/visibility.md": [
+            "local runtime retains the Profile", "prepare --board-url", "review --input",
+            "--approve APPROVAL_HASH", "visibility sync", "read-only MCP discovery evidence",
+            "exact board/profile hashes", "host OS credential store", "confirm_absent",
+            "matching local verification proof", "Existing remote issues and bindings",
+        ],
+        "templates/METHOD.template.md": [
+            "Coding phase agents never call Jira tools", "visibility verified",
+            "visibility sync", "supervisor alone", "coding turns do neither",
+        ],
+        "verbs/next.md": [
+            "Coding phase agents never call Jira tools", "visibility sync",
+            "phase agents do neither",
+        ],
+    }.items():
+        text = " ".join(read_skill(origin).split())
+        for term in terms:
+            if term not in text:
+                fail(f"{origin} is missing the connect contract: {term}")
+
+
 def main() -> None:
     if not (SKILL / "SKILL.md").is_file():
         fail(f"missing {SKILL / 'SKILL.md'}")
+    check_connect_contract()
     assert_parser_samples()
     check_backlog_template()
     template = read_skill("templates/CONTEXT.template.md")

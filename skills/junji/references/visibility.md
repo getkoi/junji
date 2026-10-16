@@ -1,77 +1,102 @@
 # Optional external visibility — Jira first
 
-The local board always works offline. Ask during plan whether this effort should publish to Jira.
-Existing issues are optional: a run normally creates its remote hierarchy. The effort becomes either
-one issue with subtasks or an epic with tasks; executable cards become the children. Select the
-existing Jira board/project, discover its actual issue types, required fields, columns and workflows,
-and review one target per local state with equivalent remote statuses and allowed source statuses.
-Keep all provider data outside canonical cards, in .koi/adapters/jira.json and .koi/visibility/.
+The engineer-facing flow is `/junji connect BOARD_URL`: give the agent the existing Jira board link,
+review one readable summary, and approve it. Jira is optional; `.koi/board.json` remains authoritative
+and works offline. Connection and publication never authorize execution or bypass human gates.
 
-Use `junji-board visibility` for setup, login, discover, prepare, review, import, sync, status and verified
-operations. It uses the same Rust library as the driver and the host OS credential store; it
-requires no Yokai executable. Browser OAuth is the default interactive login. If the user chooses
-a personal API token, an organization admin must allow API-token authentication in the Rovo MCP
-server. Use `junji-board visibility login --auth-method api-token --site https://example.atlassian.net
---cloud-id CLOUD_UUID`, then setup. The user enters their account email and token in the hidden CLI
-prompt, never in chat or command arguments. Choose **Create API token with scopes** for **MCP v2**,
-with only read, write and search Jira agent-interface scopes. Login checks read access before replacing credentials in the host OS store. API-token setup
-uses the explicit site/cloud ID rather than OAuth grant discovery. `visibility login --auth-method
-oauth` switches back. Each process reuses its approved credential read across syncs. A newly rebuilt
-macOS binary may require Keychain approval again. Never store tokens in repository files or transfer them into a sandbox.
+## Ownership and trust boundary
 
-After the user accepts the refined backlog, review the accepted board and profile and publish parent then all children. Opt-in authorizes
-automatic publication of accepted later discovered cards using the same configuration. Publishing a new card
-does not authorize implementing it or bypassing its human gate. External edits never change local
-scope or verification automatically. Import only explicitly selected external work.
+A dedicated host connection agent discovers Jira through MCP supplied over ACP. It reads current
+tool schemas and metadata instead of relying on a fixed Rust discovery recipe or hard-coded Jira
+operation selection. A dedicated host publisher applies the reviewed configuration to accepted work.
+The local runtime retains the Profile, exact-review authorization checks, verification proofs,
+stable bindings, pending operations and durable receipts. Agent reasoning does not replace those guards.
 
-After each standalone next passes the documented bar, required commit and clean-tree checks, record
-`verified --phase PN --commit HEAD_SHA`, then sync. During Yokai execution, its supervisor alone
-records verified completion and its host worker publishes; coding turns must not duplicate that work.
-Failed publication stays pending and never changes engineering results. Ambiguous issue creation
-requires reconciliation before retrying; preserve human workflow edits and show conflicts for review.
+Coding phase agents never publish to Jira. During Yokai execution, the supervisor owns verified
+state and the dedicated host publisher applies it. A publisher cannot turn a provisional done claim
+into verified completion. Standalone `next` may record local proof only after the documented bar,
+required commit and clean-tree checks pass, then request sync; publication is delegated host work.
 
-## Agent-led connection
+Credentials stay in the host OS credential store. The runtime's local MCP transport supplies the
+host agent's tool access; it does not hand tokens to the model or coding sandbox. Reuse existing
+credentials and connection state. Only missing/expired authentication requires the user's secure
+host login (browser OAuth or hidden API-token entry). Never request tokens in chat or command
+arguments, store them in repository files, or transfer them into a sandbox. Headless execution
+never opens sign-in. Do not silently change the authentication method to work around a failure.
 
-Own configuration on the user's behalf. After the backlog is accepted, ask for the Jira board URL
-only if it is not already known. Reuse the saved login and connection. If login is needed, guide
-the user through the host credential flow; never ask them to paste secrets into chat. Do not ask the
-user to find project keys, account IDs, status IDs or write JSON that Jira metadata can resolve.
+## Connection protocol — internal agent tooling
 
-1. Run `junji-board visibility prepare --board-url BOARD_URL` and save stdout to a temporary JSON
-   file. Preparation only reads Jira and the local board; it does not save settings or create issues.
-2. Read `summary`, `questions` and the accepted backlog. The adapter recommends an epic with tasks
-   for multiple accepted cards, or an issue with subtasks for one card when supported. Existing
-   reviewed hierarchy takes precedence. Explain the recommendation and adjust it if the effort's
-   scope calls for a different supported hierarchy.
-3. Resolve technical questions through Jira metadata. Write a request containing `board_url` and
-   `answers`, using each question's `key` and a choice's `value`, then rerun
-   `junji-board visibility prepare --input REQUEST_FILE`. Supported answers include `hierarchy`,
-   `project_key`, `parent_type`/`child_type`, required fields such as `parent.components`, and status
-   targets such as `child.active`. Additional filter defaults go in `parent.defaults`/`child.defaults`.
-   Set `filter_reviewed: true` only after checking the actual board filter and supplying the defaults
-   needed for created issues to appear there. Ask the user only for business choices that the
-   available context cannot settle, in plain language with named options. Never forward raw JSON
-   prompts or guess a required custom value. Repeat until `questions` is empty.
-4. Present one readable summary: Jira board/project, parent and child hierarchy and card count,
-   Reporter, field defaults, status targets/equivalents and allowed source statuses, plus automatic
-   publication of later accepted cards. Use names, not IDs. Ask the user to approve that exact
-   configuration and publication scope. Merely opting into Jira or accepting the backlog does not
-   approve a connection the user has not reviewed.
-5. Only after that explicit approval, run `junji-board visibility review --input PREPARED_FILE
-   --approve APPROVAL_HASH`, using the unmodified preparation's `approval_hash`. This records the
-   chat approval without another terminal confirmation. Never edit the generated profile or use
-   the hash before approval. If local state, configuration or Jira recommendations changed,
-   prepare again and obtain renewed approval for the new summary.
-6. Sync the approved connection. Saving itself creates no issues. Later accepted cards publish
-   under that authorization without another publication question.
+Read `verbs/connect.md` for the conversation. The commands below are implementation tools for the
+agent, not an engineer checklist. Standalone Junji uses `junji-board visibility`; the driver exposes
+the compatible `yokai visibility` operations. No Yokai executable is required by standalone Junji.
 
-`junji-board visibility setup --board-url BOARD_URL` is the interactive alternative. It uses the
-same preparation and one summary approval; unresolved custom questions return to the agent.
+1. Read the accepted board, existing profile, bindings and pending state. Ask for the board URL only
+   if unknown. Empty, unaccepted efforts create no remote hierarchy. `BACKLOG.proposed.json` is never
+   a preparation or publication input.
+2. Run `junji-board visibility prepare --board-url BOARD_URL` on the host and retain its JSON output
+   in a temporary file. The host connection agent discovers the actual project, current account,
+   issue types, required fields, board filter and workflows through MCP. Preparation reads remote
+   data; it does not create issues or save an approved profile.
+3. Resolve technical questions through the host agent's metadata discovery. For unresolved business
+   choices, ask in plain language with named options. The internal `prepare --input REQUEST_FILE`
+   protocol carries `board_url` and `answers`; use the returned question keys and choice values,
+   not invented identifiers. Check filter inclusion and required defaults before marking a filter
+   reviewed. Preserve existing hierarchy and bindings unless the user explicitly reviews a change.
+   Recommend a supported hierarchy appropriate to the effort; do not assume a fixed card-count rule.
+4. Present one exact summary: board/project, parent and child types, accepted cards, Reporter,
+   fields/defaults, board-filter inclusion, status targets/equivalents/allowed sources, existing
+   bindings and automatic publication scope for later accepted cards. Wait for explicit approval.
+   Backlog acceptance and a general opt-in are not approval of an unseen configuration.
+5. Only after approval, run `junji-board visibility review --input PREPARED_FILE --approve APPROVAL_HASH`
+   with the unmodified preparation and its exact `approval_hash`. Let the runtime check freshness and
+   scope. Freshness replays the actual read-only MCP discovery evidence, not nondeterministic
+   recommendations, and checks exact board/profile hashes. If that evidence or the reviewed board or
+   configuration is stale, prepare and review again; never edit a hash or substitute a new revision
+   to bypass approval. Saving creates no issues: **setup saved** is not
+   **publication verified**.
+6. Request `junji-board visibility sync` on the host. This invokes the dedicated host publisher;
+   it is not permission for the orchestrating or coding agent to make independent remote writes.
+   Read `junji-board visibility status` and the returned evidence before reporting confirmed issue
+   links or delivery. Report pending/conflicting work honestly. Without live evidence, state that
+   publication has not been verified.
 
-Uncertain creation can be reconciled with resolve --input FILE: select an existing issue_key or
-confirm_absent after checking Jira, naming phase_id (null for the effort parent). Review is interactive;
-only then may a subsequent sync retry creation. Pre-registered clients may specify --redirect-port.
-Connection setup also accepts additional field defaults required by the selected board's filter.
+Secure login, discovery, review, import and reconciliation operations remain available internally
+for compatibility and support. Optional `--agent` / `--model` select an existing host ACP agent;
+do not require them, technical IDs or profile JSON as engineer setup steps.
 
-BACKLOG.proposed.json is never a publication input. Empty, unaccepted efforts create no remote
-hierarchy. Pending review still allows progress publication for previously accepted cards.
+### Advanced authentication support
+
+Only when secure login is needed, use the retained host auth flow. Browser OAuth remains the default;
+`junji-board visibility login --auth-method oauth` explicitly selects it. API-token login uses
+`junji-board visibility login --auth-method api-token --site SITE_URL --cloud-id CLOUD_UUID`;
+the connection agent resolves technical site identifiers rather than asking the user to hunt for them.
+The user enters the account email locally; token input is hidden. Rovo MCP API-token auth must
+be allowed by the organization; choose a scoped MCP v2 token with `read:jira:agent-interface`,
+`write:jira:agent-interface` and `search:jira:agent-interface`. Login checks read access before
+replacing credentials. Pre-registered OAuth clients may need `--client-id` / `--redirect-port`.
+These are authentication support tools, not the connection workflow. Never echo credentials.
+
+## Publication and reconciliation safeguards
+
+Publish the effort parent and accepted cards only within the approved destination and scope. Later
+accepted additions may publish under that authorization; a different destination, hierarchy or scope
+requires renewed review. Existing remote issues and bindings must be reused, not recreated. Imported
+work requires explicit selection and still does not authorize execution. Remote edits never silently
+replace local scope, dependencies, verification requirements or human gates.
+
+Done requires a matching local verification proof, not merely a card marked done, an agent's claim,
+or a Jira status. Standalone local proof uses `verified --phase PN --commit HEAD_SHA` only after the
+bar, required commit and clean-tree checks pass, then requests `junji-board visibility sync` to
+delegate publication to the host agent. During Yokai runs, only the supervisor records proof and
+requests sync; phase agents do neither. Coding phase agents never perform Jira writes. Pending delivery
+never changes engineering results; publication can resume independently, including after consolidation.
+
+Keep stable creation/comment markers, partial hierarchies, bindings and receipts. Reconcile uncertain
+creation before retrying. The internal `resolve --input FILE` flow can bind an existing `issue_key`
+or authorize retry with `confirm_absent` after checking Jira, naming `phase_id` (null for the parent).
+Do not confirm absence without evidence or silently rebind a card. Preserve unexpected human workflow
+edits and present conflicts; transitions must respect reviewed targets, equivalents and source states.
+
+Profiles remain in `.koi/adapters/jira.json`; bindings, proofs and receipts remain under
+`.koi/visibility/`, outside canonical cards. Preserve these when reconnecting or consolidating.
+Pending review allows progress publication for previously accepted cards, never the draft proposal.

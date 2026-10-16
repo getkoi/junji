@@ -21,7 +21,13 @@ receipts and regenerable noise; follow branch/push directives. Verify commit and
 The board remains authoritative; BACKLOG.md is only the generated view. Pending review keeps
 next_action at /junji refine even after the current card finishes.
 
-Standalone publication: after the green bar and required commit/clean-tree checks, record verified
-completion and sync per references/visibility.md. During a Yokai run, the supervisor owns publication.
+Coding phase agents never call Jira tools. When publication is enabled, standalone next records local
+verified proof after the green bar and required commit/clean-tree checks, then requests
+`junji-board visibility sync` per references/visibility.md.
+Sync delegates to the dedicated host publisher; it is not coding-agent Jira access. During a Yokai run,
+the supervisor alone records verified state and requests sync; phase agents do neither. The host
+publisher applies it within the reviewed authorization, preserving bindings; failed delivery does not
+change engineering results. Use `/junji connect` outside the phase for connection review or publication follow-up.
+
 Report Phase N of M, Next action and the concrete outcome. When complete, also name iterate as the
 way to add work. Stop after one card.

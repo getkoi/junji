@@ -30,14 +30,14 @@ One agent session working on the project: deliberately disposable: it can be thr
 re-reading the working folder. An autonomous driver spawns a fresh window per phase.
 _Avoid_: session (an ACP concept in the driver), run, context
 
-### The ten verbs
+### The eleven verbs
 
 **Verb**:
-One of the method's ten dispatchable commands, parsed as the first argument to `/junji`. The pipeline is
+One of the method's eleven dispatchable commands, parsed as the first argument to `/junji`. The pipeline is
 `begin → (research*|design*) → plan → refine → next … → (iterate → next …)* → consolidate`, with
-`research`, `design`, `grill`, and `brief` available on demand at any point (none of those four advances
-the Next-action pointer). `iterate` is on demand after every phase is `[done]`; it moves the pointer only
-`consolidate → next`.
+`research`, `design`, `grill`, and `brief` available on demand, and optional `connect` after backlog
+acceptance. These five do not advance the Next-action pointer. `iterate` is on demand after every phase
+is `[done]`; it moves the pointer only `consolidate → next`.
 _Avoid_: command, subcommand, action
 
 **begin**:
@@ -84,6 +84,12 @@ _Avoid_: recap, status, handoff, summary, chat contract
 The verb that decomposes the plan into ordered, independently-verifiable phases or reshapes an
 unfinished phase list. Human gates and dependencies remain method concerns; runtime choices do not.
 _Avoid_: decompose (only its first mode), breakdown, iterate
+
+**connect**:
+An optional verb that reviews a Jira destination and publication scope for accepted work. It separates
+connection approval from backlog acceptance and execution authorization, preserves existing remote
+identities, and reports saved setup separately from verified publication. Does not advance Next action.
+_Avoid_: execute, publish-all, driver setup
 
 **next**:
 The verb that runs ONE full phase end to end: load → phase research → write or reuse the phase plan →

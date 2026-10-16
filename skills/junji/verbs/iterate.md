@@ -49,5 +49,6 @@ Pending proposal review points Next action to /junji refine; iterate itself neve
    Runtime choices stay with their owner. No product code. Discard cancels the pending review.
 7. **Commit and stop.** Conventional commit of accepted board and method artifacts, honoring Standing
    overrides. First line: `Next action: /junji next`. Then the new goals (chat cap 5; full accepted
-   list in BACKLOG.md). Draft work never publishes; existing adapter authorization publishes accepted
-   additions automatically without authorizing their execution or bypassing human gates.
+   list in BACKLOG.md). Draft work never publishes; the dedicated host publisher handles accepted
+   additions within existing authorization without authorizing execution or bypassing human gates.
+   For a new or changed connection, offer `/junji connect`; iterate does not write to Jira.
