@@ -9,7 +9,7 @@ license: MIT
 user-invocable: true
 metadata:
   author: matheusps
-  version: "0.12.0"
+  version: "0.13.0"
 ---
 
 # Junji execution
@@ -108,7 +108,7 @@ Types are fixed. Full rules: `references/docs.md`.
 | `grill` | Extra grilling pass on demand (does not advance Next action) | [verbs/grill.md](verbs/grill.md) |
 | `brief` | Chat-only product briefing from `[done]` phases (does not advance Next action) | [verbs/brief.md](verbs/brief.md) |
 | `refine` | Decompose / reshape the phase list (markdown only) | [verbs/refine.md](verbs/refine.md) |
-| `next` | Run one phase end to end | [verbs/next.md](verbs/next.md) |
+| `next` | Run one phase end to end (`--subagent` delegates it) | [verbs/next.md](verbs/next.md) |
 | `iterate` | After all phases `[done]`, grill a delta and append already-specced phases | [verbs/iterate.md](verbs/iterate.md) |
 | `consolidate` | Collapse `.koi/run/` into one repo-native deliverable | [verbs/consolidate.md](verbs/consolidate.md) |
 
@@ -116,7 +116,10 @@ Driver loop / harnesses / recovery (not a verb): [references/autonomous-driver.m
 
 ## Dispatch
 
-Parse the first argument as the verb (table above).
+Parse the first argument as the verb (table above). Tokens after the verb are **verb options**: `--name`,
+no value. The verb reference defines which options exist. An unknown option stops the verb and names the
+token; do not run the steps. "Do the next task" is bare `next` (no options). Today only `next` defines
+`--subagent`.
 - No verb and `.koi/run/` is absent, or holds only an `init` stub (no `.koi/run/BACKLOG.md` yet) → **`begin`**.
 - No verb but the user said "do the next task" (or similar) → **`next`**.
 - No verb otherwise → read `.koi/run/BACKLOG.md › Next action` and run (or confirm) the verb it names.
@@ -134,9 +137,9 @@ The working folder is always `.koi/run/` at the repo root. `begin` starts withou
 - Stages don't collapse: `begin` copies METHOD/BACKLOG then surveys (facts only, including Skill scout into
   `CONTEXT.md › Skills`), optional `research` gathers cited notes, optional `design` synthesizes the
   visual contract (follows Skills for `design`), `plan`/`grill` think, `refine` shapes the phase list,
-  `next` executes one phase (Must skills whose *when* matches), `iterate` grills a post-execution delta
-  onto the backlog, optional `brief` returns a chat-only product briefing (writes nothing). The
-  Next-action pointer tracks where you are.
+  `next` executes one phase (Must skills whose *when* matches; `--subagent` delegates that phase to one
+  isolated child), `iterate` grills a post-execution delta onto the backlog, optional `brief` returns a
+  chat-only product briefing (writes nothing). The Next-action pointer tracks where you are.
 - One phase per `next`. Never start the following phase.
 - `.koi/run/PLAN.md`, `CONTEXT.md`, and `METHOD.md` are stable (PLAN/CONTEXT move only when a decision
   changes); churn lives in `BACKLOG.md` (compacted) and `phases/`. Never create those files at the repo root
