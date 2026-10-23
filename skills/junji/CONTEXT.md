@@ -33,21 +33,24 @@ _Avoid_: session (an ACP concept in the driver), run, context, subagent
 **Subagent**:
 One host child that runs a single `next` phase for `/junji next --subagent`. It re-reads the working
 folder and runs `/junji next`, not a driver verb. The parent window posts the Report when the child finishes.
+If the invoking prompt already says this run pre-authorized gated phases, the parent includes that one
+sentence in the child task. Bare `--subagent` does not invent it.
 _Avoid_: window (the parent session), autonomous driver
 
-### The ten verbs
+### The eleven verbs
 
 **Verb**:
-One of the method's ten dispatchable commands, parsed as the first argument to `/junji`. The pipeline is
+One of the method's eleven dispatchable commands, parsed as the first argument to `/junji`. The pipeline is
 `begin → (research*|design*) → plan → refine → next … → (iterate → next …)* → consolidate`, with
-`research`, `design`, `grill`, and `brief` available on demand at any point (none of those four advances
+`research`, `design`, `grill`, `brief`, and `goal` available on demand at any point (none of those five advances
 the Next-action pointer). `iterate` is on demand after every phase is `[done]`; it moves the pointer only
-`consolidate → next`.
+`consolidate → next`. `goal` never occupies the pointer (same class as `brief`).
 _Avoid_: command, subcommand, action
 
 **Verb option**:
 A `--name` token after a verb on `/junji`, for that invocation only. The verb reference defines which
-options exist. An unknown option stops the verb.
+options exist. Flags have no value, except `goal`'s `--until`, which takes the next token (`4`, `p4`,
+or `P4`). `--until=p4` is an unknown option. An unknown option stops the verb.
 _Avoid_: standing override, status tag, strategy, tier, yokai launch flag
 
 **begin**:
@@ -101,8 +104,21 @@ implement → verify → compact → commit. It then stops. The per-phase loop a
 calls repeatedly. Skips writing the phase file when a matching `phases/phase-NN-*.md` already exists
 (`iterate` writes these). Obeys `.koi/run/DESIGN.md` when present for human-facing output. Implement
 follows **Skills** Must rows for `next` whose *when* matches the phase. The `--subagent` **verb option**
-delegates that phase to one **subagent**; bare `next` runs it in this window.
+delegates that phase to one **subagent**; bare `next` runs it in this window. If the invoking prompt
+already says this run pre-authorized gated phases, that one sentence is part of the child task.
 _Avoid_: run (the driver's CLI subcommand), execute-all, step
+
+**goal**:
+An on-demand verb that asks the harness for its long-running goal tool and passes one objective:
+complete runnable phases one by one by running `/junji next --subagent` and waiting for each child's
+Report. This window does not run phases. If the tool is missing, it stops and leaves `.koi/run/` and
+the tree untouched. `--until <phase>` stops after that backlog heading id, inclusive. `--allow-gated`
+pre-authorizes gated phases for this goal run, subject to standing directives, and the objective tells
+the goal window to pass that sentence into every child task. On a halt, it stops and does not retry.
+It does not run `consolidate` or `iterate`. It does not advance the Next-action pointer. Distinct from
+the **autonomous driver**: no fresh process per phase, no recovery, no cost ceiling. Yokai does not
+grow a `goal` flag.
+_Avoid_: Goal & scope (a phase-plan section), autonomous driver, yokai launch flag
 
 **iterate**:
 The verb that, after every phase is `[done]`, grills a request (including how to slice it) and appends N
@@ -188,7 +204,7 @@ _Avoid_: worklog (old name), todo-list, log
 **Next action** (pointer):
 The line at the top of `BACKLOG.md` naming the verb a fresh or headless window runs next: the on-disk
 source of truth for "what's next". Advances `begin → plan → refine → next … → consolidate` (`research`,
-`design`, `grill`, and `brief` never move it; `iterate` never occupies it and moves it only
+`design`, `grill`, `brief`, and `goal` never move it; `iterate` never occupies it and moves it only
 `consolidate → next`).
 _Avoid_: cursor, current step, status
 
@@ -218,7 +234,8 @@ _Avoid_: task, step, ticket, milestone
 **Phase plan** (`.koi/run/phases/phase-NN-<slug>.md`):
 The per-phase **how-to contract** `next` writes before implementing, or **`iterate` writes** before
 `next`/yokai run: goal & scope, an Explicitly-out list, a numbered Approach, tests/gate, and an Outcome
-section added on completion. Not a tutorial. `next` reuses a matching file when it already exists.
+section added on completion. Not a tutorial. Goal & scope is that phase's in and out list, not the
+`goal` verb. `next` reuses a matching file when it already exists.
 `phases/` under the working folder is an append-only build log.
 _Avoid_: task file, subplan, spec, tutorial
 
@@ -299,7 +316,7 @@ _Avoid_: talk contract, tone guide, ADHD mode, style prompt
 The fixed purpose of a working-folder file: **explanation** (PLAN), **reference** (CONTEXT, BACKLOG,
 DESIGN, notes), **how-to** (METHOD, phase plan). Consolidate follows the host outline. SSOT
 `references/docs.md`. Junji does not generate tutorials. Types are method-fixed, not chosen per project.
-The **brief** verb writes no file and is not a document type.
+The **brief** verb writes no file and is not a document type. The **goal** verb writes no file either.
 _Avoid_: template kind, genre, outline-approval
 
 **Grilling**:
@@ -317,7 +334,7 @@ _Avoid_: review, Q&A, interrogation, one-question-at-a-time, design (the verb)
 **Autonomous driver**:
 A thin external supervisor that loops `next` unattended: spawning a fresh window per phase and verifying
 the on-disk contract: only after a human has run `begin → plan → refine` (and, later, `iterate` if they
-want more work). Carries no work-intelligence; it never grills, iterates, or briefs. The yokai driver is one
+want more work). Carries no work-intelligence; it never grills, iterates, briefs, or runs `goal`. The yokai driver is one
 implementation (see [`crates/yokai/CONTEXT.md`](https://github.com/getkoi/koi/blob/main/crates/yokai/CONTEXT.md)). The driver owns optional execution choices; **next** in an interactive window stays one serial phase.
 _Avoid_: runner, orchestrator, bot
 
@@ -355,6 +372,8 @@ _Avoid_: runner, orchestrator, bot
   the tagged band.
 - **"brief"**: the optional **`brief` verb** (chat-only product briefing) vs leftover informal "a brief"
   for a **source doc**. Use the verb name; never call a source doc a brief.
+- **"goal"**: the **`goal` verb** (a harness goal that repeats `next`) vs a phase plan's **Goal & scope**
+  section (that phase's in and out list). Say which.
 
 ## Example dialogue
 
@@ -375,3 +394,6 @@ will not add work once the list is all `[done]`.
 **Dev:** Three phases are `[done]` and I need to show someone what they can use.
 **Expert:** `/junji brief`. It reads Outcomes and CONTEXT and returns a short product briefing in chat,
 what works, how to run/check, what to watch. It writes nothing and does not move Next action.
+**Dev:** The phase plan has a Goal & scope section. Is that `/junji goal`?
+**Expert:** Goal & scope is that phase's in and out list. `/junji goal` asks the harness to run runnable
+phases one by one with `/junji next --subagent`. It writes nothing and does not move Next action.

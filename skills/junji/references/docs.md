@@ -2,7 +2,7 @@
 
 How junji writes working-folder markdown. Types are **fixed by the method**, not chosen per
 project. Grilling settles content; this file settles shape. No outline-approval step. Junji does
-not generate tutorials. The `brief` verb is not a document type: it writes no file.
+not generate tutorials. The `brief` verb is not a document type: it writes no file. `goal` writes no file either.
 
 Always-on table lives in `SKILL.md › Documents`. Templates carry a one-line purpose; this file is
 the writing SSOT.
