@@ -32,8 +32,8 @@ _Avoid_: session (an ACP concept in the driver), run, context, subagent
 
 **Subagent**:
 One host child that runs a single `next` phase for `/junji next --subagent`. It re-reads the working
-folder. The parent window posts the Report when the child finishes.
-_Avoid_: swarm, worker turn, window (the parent session), autonomous driver
+folder and runs `/junji next`, not a driver verb. The parent window posts the Report when the child finishes.
+_Avoid_: window (the parent session), autonomous driver
 
 ### The ten verbs
 
@@ -102,7 +102,7 @@ calls repeatedly. Skips writing the phase file when a matching `phases/phase-NN-
 (`iterate` writes these). Obeys `.koi/run/DESIGN.md` when present for human-facing output. Implement
 follows **Skills** Must rows for `next` whose *when* matches the phase. The `--subagent` **verb option**
 delegates that phase to one **subagent**; bare `next` runs it in this window.
-_Avoid_: run (the driver's CLI subcommand), execute-all, step, swarm
+_Avoid_: run (the driver's CLI subcommand), execute-all, step
 
 **iterate**:
 The verb that, after every phase is `[done]`, grills a request (including how to slice it) and appends N
@@ -244,14 +244,9 @@ _Avoid_: blocked, locked, paused
 
 **Status tag**:
 The bracket token on a BACKLOG heading: `[todo]` `[planning]` `[building]` `[sealing]` `[done]`. Optional
-`[gated]` prefix. Distinct from **strategy**, from **tier**, from yokai Build **iteration**, and from the TUI rail's
+`[gated]` prefix. Distinct from **tier**, from yokai Build **iteration**, and from the TUI rail's
 **stations**.
 _Avoid_: pending, in progress
-
-**Strategy**:
-An optional driver execution choice: serial implementation or partition-and-merge work.
-Legacy headings may carry this annotation; ordinary Junji planning does not choose it.
-_Avoid_: task, triage, mode, workflow, tier
 
 **Tier**:
 An optional driver capability band used to select model candidates. Legacy heading annotations
@@ -353,12 +348,10 @@ _Avoid_: runner, orchestrator, bot
   backlog tag.
 - **"driver"**: the method's *autonomous driver* is the abstract supervisor concept; *the driver* in the
   root `CONTEXT.md` is the Rust application that implements it.
-- **"swarm"**: the `[swarm]` **strategy** tag on a phase heading, plus yokai's Build fan-out when
-  that tag and `swarm.enabled` both hold. Not a junji verb. Fan-out is a driver Build act. Do not call
-  the selector **triage**. A **subagent** is one host child for a single interactive `next`, requested
-  with the `--subagent` **verb option**.
-- **"tier"**: the `[low]` / `[medium]` / `[high]` / `[ultra]` heading tag. Not a Model, not a
-  **strategy**, not a role profile. Interactive **next** does not switch Agent/Model; yokai walks
+- **"subagent"**: one host child for `/junji next --subagent`. It runs `/junji next` and does not
+  delegate that phase to a driver verb.
+- **"tier"**: the `[low]` / `[medium]` / `[high]` / `[ultra]` heading tag. Not a Model and not a
+  role profile. Interactive **next** does not switch Agent/Model; yokai walks
   the tagged band.
 - **"brief"**: the optional **`brief` verb** (chat-only product briefing) vs leftover informal "a brief"
   for a **source doc**. Use the verb name; never call a source doc a brief.

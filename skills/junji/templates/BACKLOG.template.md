@@ -9,8 +9,8 @@ See `.koi/run/CONTEXT.md` (facts / bar), `.koi/run/PLAN.md` (why), and `.koi/run
 
 Status tags (exactly one per heading): `[todo]` `[planning]` `[building]` `[sealing]` `[done]`.
 Ordinary heading: `### [todo] P0 - Title`. Optional `[gated]` comes before status for destructive,
-irreversible, or human-decision phases. Legacy strategy/tier annotations remain supported and must
-be preserved when present; they are not required. Runtime execution choices belong to Yokai.
+irreversible, or human-decision phases. A legacy tier tag may be present and is kept; it is not
+required. A status rewrite drops leftover `[plain]` / `[swarm]`. Runtime execution choices belong to Yokai.
 
 ## Carry-forward decisions
 

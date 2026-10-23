@@ -9,7 +9,7 @@ Accepted
 Claude Code's `/code-review [--comment]` keeps the command and changes where the result is delivered.
 Bare `/junji next` fills the parent window with one phase's research, edits, and gate output. A human
 who wants that phase isolated still needs the Report in the window they invoked. Yokai already spawns
-a fresh window per phase. Swarm is a driver Build fan-out. Neither is this request.
+a fresh window per phase. That driver loop is not this request.
 
 ## Decision
 
@@ -25,8 +25,8 @@ a fresh window per phase. Swarm is a driver Build fan-out. Neither is this reque
    does not pre-authorize it.
 4. **Skill dispatch only.** The option is not a backlog tag, a standing override, or a yokai launch
    flag. Do not patch in-flight `METHOD.md`. The copied method stays the seven steps. Yokai does not
-   grow this flag. A **subagent** is one host child for a single interactive `next`. **Swarm** stays
-   yokai's partition-and-merge Build act.
+   grow this flag. A **subagent** is one host child for a single interactive `next`. It runs
+   `/junji next`, not a driver verb.
 
 ## Consequences
 
@@ -42,4 +42,4 @@ a fresh window per phase. Swarm is a driver Build fan-out. Neither is this reque
 - **A yokai `--subagent` flag** — the driver already uses a fresh window per phase.
 - **A backlog tag or standing override** — the choice is this invocation only.
 - **Patching in-flight `METHOD.md`** — that file is stable after `begin`.
-- **Swarm, or more than one child** — fan-out stays a driver Build act. One phase, one child.
+- **More than one child** — one phase, one child.

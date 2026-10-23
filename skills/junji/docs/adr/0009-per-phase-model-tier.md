@@ -1,11 +1,10 @@
 # Per-phase model tier
 
-Status: amended by [framework ADR-0007](https://github.com/getkoi/koi/blob/main/docs/adr/0007-independent-junji-and-yokai-setup.md): fresh method headings no longer require tiers; legacy tags remain supported. Driver pairing: yokai ADR-0049. Amends refine / iterate heading
+Status: amended by [framework ADR-0007](https://github.com/getkoi/koi/blob/main/docs/adr/0007-independent-junji-and-yokai-setup.md): fresh method headings no longer require tiers; legacy tags remain supported. Amended by [0011](0011-no-phase-strategy.md): no strategy tag on the heading. Driver pairing: yokai ADR-0049. Amends refine / iterate heading
 contract (ADR-0005) and the BACKLOG grammar.
 
 `refine` and `iterate` write exactly one **tier** tag on every phase heading:
-`[low]`, `[medium]`, `[high]`, or `[ultra]`, after the strategy tag and before
-status. The tag names how demanding the phase is, not which Agent or Model to
+`[low]`, `[medium]`, `[high]`, or `[ultra]`, before status. The tag names how demanding the phase is, not which Agent or Model to
 run. Missing tag is `[medium]`. Interactive `/junji next` keeps the tag when
 rewriting status and does not switch the human's Agent or Model — yokai honors
 the band.

@@ -10,9 +10,9 @@ into an ordered phase list in `.koi/run/BACKLOG.md`:
    dependents; record `depends_on` wherever it is not obvious.
 2. Flag irreversible, destructive, or human-decision phases `[gated]`. Importing or refining a
    plan does not authorize these actions. Preserve standing directives.
-3. Write ordinary headings with a status and phase ID. Strategy and model-tier tags are optional
-   legacy annotations, not planning decisions Junji requires. Preserve existing annotations when
-   reshaping; do not add them to ordinary headings. Yokai owns execution choices outside the backlog.
+3. Write ordinary headings with a status and phase ID. A tier tag is an optional
+   legacy annotation, not a planning decision Junji requires. Preserve an existing tier tag when
+   reshaping; do not add one to an ordinary heading. Yokai owns execution choices outside the backlog.
 4. Set `Next action` to `/junji next`.
 
 ```text

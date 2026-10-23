@@ -26,15 +26,15 @@ below); from then on every "do the next task" runs `next`. After every phase is 
 3. **Write the phase plan.** If status is `[building]` or `[sealing]`, or exactly one matching
    `.koi/run/phases/phase-NN-*.md` already exists for this phase, **reuse it**: do not rewrite
    (`iterate` writes these; the driver skips Plan when they exist). Otherwise set `[planning]`
-   (keep `[gated]`, `[plain]` / `[swarm]`, and any existing tier tag) and
+   (keep `[gated]` and any existing tier tag; drop `[plain]` / `[swarm]`) and
    create it from the phase-plan template. NN is the heading number, zero-padded: `P0` →
    `phase-00-<slug>.md`, not `phase-01`. Fill the **Explicitly out** list — it is what
    prevents scope creep. **Approach** is a numbered recipe. If the phase ships UI and `DESIGN.md` exists,
    cite it under constraints. If a Must row lists **plan**, follow those `SKILL.md` files while writing
    the phase plan. Never write under repo-root `phases/`. The plan's `Status:` line points at
    the BACKLOG heading; do not mirror tags there.
-4. **Implement.** If status is `[sealing]`, skip to step 6. Otherwise set `[building]` (keep `[gated]`,
-   `[plain]` / `[swarm]`, and any existing tier tag; never leave a
+4. **Implement.** If status is `[sealing]`, skip to step 6. Otherwise set `[building]` (keep `[gated]`
+   and any existing tier tag; drop `[plain]` / `[swarm]`; never leave a
    reused plan as `[planning]`). On the fixed branch (see `.koi/run/CONTEXT.md › Standing overrides`), scoped
    strictly to this phase. Obey `.koi/run/DESIGN.md` for human-facing surfaces when present. Follow
    `CONTEXT.md › Skills` Must rows for **next** / **coder** whose *when* matches this phase (read those
@@ -45,7 +45,7 @@ below); from then on every "do the next task" runs `next`. After every phase is 
    that bar; scripts are optional for manual Junji. Every command must exit 0. Never weaken the bar
    to pass: fix the root cause or halt. Preserve failing checks and leave the phase `[building]`.
 6. **Compact the backlog.** Set `[sealing]`, then mark the phase `[done]` with a 1-2 line summary
-   (keep `[gated]`, `[plain]` / `[swarm]`, and any existing tier tag). Move anything later phases depend on into
+   (each rewrite keeps `[gated]` and any existing tier tag, and drops `[plain]` / `[swarm]`). Move anything later phases depend on into
    "Carry-forward decisions". Trim the finished phase; keep the next
    detailed. Add an **Outcome** section to the phase plan. Update `Next action` (`/junji next` while
    `[todo]` or in-flight phases remain, else `/junji consolidate`). (When run unattended, make
@@ -115,10 +115,10 @@ Run `yokai` to configure reusable settings, review and smoke-test its executable
 review phase assessments before choosing whether to start. Headless execution requires this preparation in advance. No raw-goal intake is implied.
 
 Yokai keeps runtime settings and compact gate fingerprints in `.koi/yokai.yml`. Reviewed per-phase
-tier/strategy assessments and effort differences belong in `.koi/run/yokai.yml`. New or changed phase
+tier assessments and effort differences belong in `.koi/run/yokai.yml`. New or changed phase
 scope can be assessed through the helper or explicit CLI. Human-approved YAML needs no second CLI
 approval or fingerprint. Never put runtime choices in method Markdown. Junji alone does not require this mapping; ordinary headings remain unchanged
-except for progress. Preserve legacy annotations when present. Approving configuration, assessments or sensors
+except for progress. Preserve a legacy tier tag when present; a status rewrite drops leftover `[plain]` / `[swarm]`. Approving configuration, assessments or sensors
 does not approve `[gated]` phases. Never let automation override standing directives.
 
 Consolidation removes all of `.koi/run/`, including overrides, sessions, recovery and budget accounting.

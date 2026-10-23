@@ -15,7 +15,7 @@ conversation. (TUI/ACP reattach of an interrupted mid-turn is ACP `session/resum
 **Onboarding.** Run interactive `yokai` on a prepared project. Missing reusable settings are saved in
 `.koi/yokai.yml`; reviewed phase assessments and effort differences live in `.koi/run/yokai.yml`. The configured agent proposes
 an executable gate from CONTEXT and project checks, then a human reviews commands, temporary smoke results and final saving. Compact fingerprints live
-in durable settings. Per-phase tier/strategy/reason is reviewed separately through `yokai`,
+in durable settings. Per-phase tier and reason are reviewed separately through `yokai`,
 through the helper or preparation wizard, then saved in effort YAML. Complete choices need no second
 approval or fingerprint. Missing or incomplete assessments stop headless execution. Changed bars
 or scripts require reconciliation. Headless startup only reports what is missing and writes no setup.
@@ -93,8 +93,7 @@ envelope) unchanged:
 
 With `token_savings: true`, yokai reuses two conversations per phase: Plan, coder and Seal
 (including corrections and bookkeeping repair), and judge (including repeated review
-and diagnosis). Review is required; `[swarm]` phases run serially,
-and agent delegation is prohibited. Reattachment failures or context exhaustion may
+and diagnosis). Review is required, and agent delegation is prohibited. Reattachment failures or context exhaustion may
 require replacements, so two is not a hard cap. Normal mode still uses fresh sessions.
 
 1. **Plan**: an agent turn does steps 1-3 only: load state, research, write
@@ -112,22 +111,6 @@ require replacements, so two is not a hard cap. Normal mode still uses fresh ses
 Yokai runs over the shared tori Connector. The driver wires the phase
 plan in as its spec and the verification bar in as its authoritative sensors. See
 [`crates/yokai/CONTEXT.md`](https://github.com/getkoi/koi/blob/main/crates/yokai/CONTEXT.md).
-
-## Swarm (optional yokai knob)
-
-Yokai fans out **inside one Build act** only when `swarm.enabled` is on **and** the reviewed phase mapping
-selects `phases.PN.strategy: swarm` in the effort file. A split turn writes work items,
-concurrent worker turns write isolated scratches under `.koi/run/swarm/`, and a merge turn is the only
-product-tree writer. One work item skips the fan-out and uses today's single coder (or single judge).
-Cap `max_workers` (default 8) is both item count and concurrency; over the cap, bad JSON, or any worker
-error is a Build miss. Each later Build iteration splits the remaining work again. Phases assessed as `plain` stay a single coder even when swarm is enabled. This is not a junji verb. **next** in an
-interactive window stays one serial phase. `yokai` controls whether the project permits swarms.
-
-```yaml
-swarm:
-  enabled: true
-  max_workers: 8
-```
 
 ## Recovery (default on)
 

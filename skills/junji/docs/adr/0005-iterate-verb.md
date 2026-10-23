@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted — amended by [0011](0011-no-phase-strategy.md) (no strategy selection).
 
 ## Context
 
@@ -21,14 +21,13 @@ without a second planning turn.
    any phase is not done. Missing request → ask what to iterate, one line, stop. Empty or never-refined
    list → refuse (point at `refine` / `next`).
 2. **Grill includes the slice list.** Reason, then frontier rounds (`verbs/grill.md`). Phase count,
-   boundaries, `depends_on`, `[gated]`, and `[plain]` / `[swarm]` are decisions in the same tree. Do not write until the
+   boundaries, `depends_on`, and `[gated]` are decisions in the same tree. Do not write until the
    frontier is empty and the user confirms shared understanding. One call may append **N** independently
    verifiable phases. Human-facing request and no `.koi/run/DESIGN.md` → activate `design` the same way
    `plan` step 1b does.
-3. **The exploration is the plan.** After confirmation, **select strategy** (`[plain]` or `[swarm]`) for
-   each phase, continue `P{max+1}`, append that many BACKLOG headings **with the strategy tag**, and write
-   a full `phases/phase-NN-<slug>.md` how-to contract for each (padding-robust so yokai skip-Plan matches).
-   Write **no product code**. Chat reports `Strategy selected.` and lists each new phase with its tag.
+3. **The exploration is the plan.** After confirmation, continue `P{max+1}`, append that many ordinary
+   BACKLOG headings, and write a full `phases/phase-NN-<slug>.md` how-to contract for each
+   (padding-robust so yokai skip-Plan matches). Write **no product code**. Chat lists each new phase.
    Crystallize like grill: terms → CONTEXT Language; locks → CONTEXT (fact) + PLAN key decisions
    (rationale). Do not rewrite PLAN's problem/approach unless the goal is reframed (standing override).
    Touch sensors only if grilling settles a bar change.

@@ -63,8 +63,9 @@ contract (CONTEXT › Design contract points at it). Writing rules: `references/
 
 Scaffolds live in this skill's `templates/` folder. Status vocabulary in `.koi/run/BACKLOG.md`:
 `[todo] · [planning] · [building] · [sealing] · [done]`. A phase that must not auto-run is prefixed `[gated]`.
-Ordinary headings need only status, phase ID and title. Preserve legacy strategy/tier annotations
-when present. Yokai's execution choices belong in its effort configuration, not ordinary headings.
+Ordinary headings need only status, phase ID and title. Preserve a legacy tier tag when present.
+A status rewrite drops leftover `[plain]` / `[swarm]`. Yokai's execution choices belong in its effort
+configuration, not ordinary headings.
 
 Two senses of "compact":
 - **Context compaction** (`/compact`): keep ONE long human session alive. A fresh window per phase makes it unnecessary.
