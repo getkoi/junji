@@ -27,6 +27,11 @@ A failed valid check is kept and reported; it is never replaced with an easier b
 so `.koi/run/` exists with a populated phase list. The driver only loops `next`: it never creates the project strategy or backlog, grills,
 iterates, or briefs. When no `[todo]` remain it surfaces consolidate (destructive); the human may `/junji iterate` instead.
 
+**`/junji goal` is not this loop.** It is an on-demand verb in one window: it asks the harness for a
+long-running goal that repeats `/junji next --subagent`, then waits for each child's Report. It does
+not spawn a fresh process per phase, does not recover, and has no cost ceiling. It still surfaces
+`/junji consolidate` and does not auto-run it. Yokai does not grow a `goal` flag.
+
 ## The loop
 
 This is a minimal custom-driver example. The shipped Yokai driver uses ACP and enables recovery by default, as described below.
