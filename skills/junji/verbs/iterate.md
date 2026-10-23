@@ -40,8 +40,8 @@ per `references/docs.md`. Crystallize locks like `verbs/grill.md`.
      preserve any annotations on existing phases without copying them onto new headings.
    - Write `.koi/run/phases/phase-NN-<slug>.md` from `templates/phase-plan.template.md`: full how-to
      contract (**Explicitly out**, numbered Approach). Pad NN to match siblings (usually two digits;
-     yokai match is padding-robust). Never write under repo-root `phases/`. Do not mirror strategy or
-     tier on the phase-plan `Status:` line.
+     yokai match is padding-robust). Never write under repo-root `phases/`. Do not mirror a tier tag
+     on the phase-plan `Status:` line.
    Re-read new headings for dependency order and human gates. Write **no product code**.
 6. **Commit.** Conventional commit of the working-folder artifacts (PLAN / CONTEXT / BACKLOG / new phase
    files, DESIGN if touched). Honor Standing overrides (e.g. commit locally, never push). No product tree.

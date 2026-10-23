@@ -37,15 +37,15 @@ below in this window.
 3. **Write the phase plan.** If status is `[building]` or `[sealing]`, or exactly one matching
    `.koi/run/phases/phase-NN-*.md` already exists (NN = this phase's numeric id; `iterate` writes these;
    yokai skips Plan when they exist), **reuse it**: do not rewrite. Otherwise set the heading to
-   `[planning]` (keep `[gated]`, `[plain]` / `[swarm]`, and `[low]` / `[medium]` / `[high]` / `[ultra]`
-   if present) and create the file from `templates/phase-plan.template.md`.
+   `[planning]` (keep `[gated]` and `[low]` / `[medium]` / `[high]` / `[ultra]` if present;
+   drop `[plain]` / `[swarm]`) and create the file from `templates/phase-plan.template.md`.
    Fill "Goal & scope" with an explicit **Explicitly out** list: that list stops scope creep.
    **Approach** is a numbered recipe, one bounded action per step. If the phase touches a human-facing
    surface and `DESIGN.md` exists, cite it under constraints / approach. If Skills Must lists **plan**,
    follow those `SKILL.md` files while writing the phase plan. Never write under repo-root
    `phases/`. The phase-plan `Status:` line points at the BACKLOG heading; do not mirror tags there.
 4. **Implement.** If status is `[sealing]`, skip to step 6. Otherwise set the heading to `[building]`
-   (keep `[gated]`, `[plain]` / `[swarm]`, and any existing tier tag; never leave a reused plan as `[planning]`). On the project's fixed branch (from
+   (keep `[gated]` and any existing tier tag; drop `[plain]` / `[swarm]`; never leave a reused plan as `[planning]`). On the project's fixed branch (from
    `.koi/run/CONTEXT.md › Standing overrides`), scoped strictly to this phase. When shipping
    human-facing UI, obey `.koi/run/DESIGN.md` with the same weight as Locked decisions. Follow
    **Skills** Must rows for `next` whose *when* matches this phase (read those `SKILL.md` files and the
@@ -56,7 +56,7 @@ below in this window.
    that bar; scripts are optional for manual Junji. Every command must exit 0. Never weaken the bar
    to pass: fix the root cause or halt. Preserve failing checks and leave the phase `[building]`.
 6. **Compact the backlog.** Set `[sealing]`, then mark the phase `[done]` with a 1-2 line summary
-   (keep `[gated]`, `[plain]` / `[swarm]`, and any existing tier tag).
+   (each rewrite keeps `[gated]` and any existing tier tag, and drops `[plain]` / `[swarm]`).
    Move any decision or discovered fact later phases depend on into **"Carry-forward decisions"**.
    Trim the finished phase; keep the next one detailed. Add an **Outcome** section to the phase plan.
    Update `Next action` (`/junji next` while `[todo]` or in-flight phases remain, else
