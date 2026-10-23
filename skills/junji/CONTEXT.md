@@ -28,7 +28,12 @@ _Avoid_: project home, workspace, scratch dir
 **Window**:
 One agent session working on the project: deliberately disposable: it can be thrown away and rebuilt by
 re-reading the working folder. An autonomous driver spawns a fresh window per phase.
-_Avoid_: session (an ACP concept in the driver), run, context
+_Avoid_: session (an ACP concept in the driver), run, context, subagent
+
+**Subagent**:
+One host child that runs a single `next` phase for `/junji next --subagent`. It re-reads the working
+folder. The parent window posts the Report when the child finishes.
+_Avoid_: swarm, worker turn, window (the parent session), autonomous driver
 
 ### The ten verbs
 
@@ -39,6 +44,11 @@ One of the method's ten dispatchable commands, parsed as the first argument to `
 the Next-action pointer). `iterate` is on demand after every phase is `[done]`; it moves the pointer only
 `consolidate → next`.
 _Avoid_: command, subcommand, action
+
+**Verb option**:
+A `--name` token after a verb on `/junji`, for that invocation only. The verb reference defines which
+options exist. An unknown option stops the verb.
+_Avoid_: standing override, status tag, strategy, tier, yokai launch flag
 
 **begin**:
 The verb that copies `METHOD.md` and `BACKLOG.md` from the skill templates (byte-identical, no rewrite)
@@ -90,8 +100,9 @@ The verb that runs ONE full phase end to end: load → phase research → write 
 implement → verify → compact → commit. It then stops. The per-phase loop a human or an autonomous driver
 calls repeatedly. Skips writing the phase file when a matching `phases/phase-NN-*.md` already exists
 (`iterate` writes these). Obeys `.koi/run/DESIGN.md` when present for human-facing output. Implement
-follows **Skills** Must rows for `next` whose *when* matches the phase.
-_Avoid_: run (the driver's CLI subcommand), execute-all, step
+follows **Skills** Must rows for `next` whose *when* matches the phase. The `--subagent` **verb option**
+delegates that phase to one **subagent**; bare `next` runs it in this window.
+_Avoid_: run (the driver's CLI subcommand), execute-all, step, swarm
 
 **iterate**:
 The verb that, after every phase is `[done]`, grills a request (including how to slice it) and appends N
@@ -343,8 +354,9 @@ _Avoid_: runner, orchestrator, bot
 - **"driver"**: the method's *autonomous driver* is the abstract supervisor concept; *the driver* in the
   root `CONTEXT.md` is the Rust application that implements it.
 - **"swarm"**: the `[swarm]` **strategy** tag on a phase heading, plus yokai's Build fan-out when
-  that tag and `swarm.enabled` both hold. Not a junji verb. **next** does not fan out via host
-  subagents. Do not call the selector **triage**.
+  that tag and `swarm.enabled` both hold. Not a junji verb. Fan-out is a driver Build act. Do not call
+  the selector **triage**. A **subagent** is one host child for a single interactive `next`, requested
+  with the `--subagent` **verb option**.
 - **"tier"**: the `[low]` / `[medium]` / `[high]` / `[ultra]` heading tag. Not a Model, not a
   **strategy**, not a role profile. Interactive **next** does not switch Agent/Model; yokai walks
   the tagged band.

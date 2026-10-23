@@ -12,6 +12,20 @@ Backlog headings use tags. Pick **first_runnable**: the first
 the human to leave only one. Yokai writes the same tags before each act; this verb writes them at the
 matching steps below.
 
+## Options
+
+Tokens after `next` are **verb options** (`--name`, no value). An unknown option stops the verb and
+names the token. Leave the phase untouched. Bare `/junji next` and "do the next task" run the steps
+below in this window.
+
+- **`--subagent`**: Ask the harness for one isolated **subagent**. Do not name a vendor tool. The child
+  does not inherit this window's transcript. Tell it to re-read `.koi/run/` and run `/junji next` with
+  no options: one phase, the seven steps below. Do not pass `--subagent` to the child. This window does
+  not load, implement, verify, or commit. When the child finishes, post its Report here (`Phase N of M`,
+  `Next action`, the win or the halt) and stop. Do not retry. Do not start another phase. If this
+  harness cannot start a subagent, stop and say so; leave the backlog, phase plan, and tree untouched.
+  A `[gated]` phase still halts inside the child; this window does not pre-authorize it.
+
 1. **Load state.** Read `.koi/run/CONTEXT.md` (including **Skills**), `.koi/run/BACKLOG.md` (status + Carry-forward), and
    `.koi/run/METHOD.md`. If `.koi/run/DESIGN.md` exists (or `CONTEXT.md › Design contract` names it),
    **read it**: binding for any human-facing output in this phase. Pick `first_runnable`.
