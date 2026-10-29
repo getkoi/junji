@@ -10,7 +10,8 @@ Chat like `references/chat.md`. Report per `.koi/run/METHOD.md › Report`. Writ
 Backlog headings use tags. Pick **first_runnable**: the first
 `[planning]` / `[building]` / `[sealing]`, else the first `[todo]`. Two in-flight tags → stop and tell
 the human to leave only one. Yokai writes the same tags before each act; this verb writes them at the
-matching steps below.
+matching steps below. A **fix phase** appended by `review` is an ordinary phase: same tags, same
+seven steps, same reuse of its `phases/phase-NN-*.md`.
 
 ## Options
 

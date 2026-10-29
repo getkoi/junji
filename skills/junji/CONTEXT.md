@@ -31,26 +31,30 @@ re-reading the working folder. An autonomous driver spawns a fresh window per ph
 _Avoid_: session (an ACP concept in the driver), run, context, subagent
 
 **Subagent**:
-One host child that runs a single `next` phase for `/junji next --subagent`. It re-reads the working
-folder and runs `/junji next`, not a driver verb. The parent window posts the Report when the child finishes.
+One host child that runs a single `next` phase for `/junji next --subagent`, or a single **review
+round** for `/junji review --subagent`. It re-reads the working folder and runs `/junji next` (or
+`/junji review`), not a driver verb. The parent window posts the Report when the child finishes.
 If the invoking prompt already says this run pre-authorized gated phases, the parent includes that one
 sentence in the child task. Bare `--subagent` does not invent it.
 _Avoid_: window (the parent session), autonomous driver
 
-### The eleven verbs
+### The twelve verbs
 
 **Verb**:
-One of the method's eleven dispatchable commands, parsed as the first argument to `/junji`. The pipeline is
+One of the method's twelve dispatchable commands, parsed as the first argument to `/junji`. The pipeline is
 `begin → (research*|design*) → plan → refine → next … → (iterate → next …)* → consolidate`, with
 `research`, `design`, `grill`, `brief`, and `goal` available on demand at any point (none of those five advances
 the Next-action pointer). `iterate` is on demand after every phase is `[done]`; it moves the pointer only
-`consolidate → next`. `goal` never occupies the pointer (same class as `brief`).
+`consolidate → next`. `review` is on demand once the tree is clean and no phase is in flight; it never
+occupies the pointer and sets it to `next` only on Request changes. `goal` never occupies the pointer
+(same class as `brief`).
 _Avoid_: command, subcommand, action
 
 **Verb option**:
 A `--name` token after a verb on `/junji`, for that invocation only. The verb reference defines which
 options exist. Flags have no value, except `goal`'s `--until`, which takes the next token (`4`, `p4`,
-or `P4`). `--until=p4` is an unknown option. An unknown option stops the verb.
+or `P4`), and `review`'s `--base`, which takes a git ref. `--until=p4` and `--base=main` are unknown
+options. An unknown option stops the verb.
 _Avoid_: standing override, status tag, strategy, tier, yokai launch flag
 
 **begin**:
@@ -84,8 +88,9 @@ _Avoid_: spec, blueprint
 **grill**:
 An extra standalone grilling pass, on demand, to sharpen a soft plan or fuzzy terminology. Requires
 `PLAN.md`, and does not advance the Next-action pointer. Uses frontier rounds (see **Grilling**). Also
-used inside `plan`, `design`, and `iterate`. Reads `DESIGN.md` when present.
-_Avoid_: review, interrogate, critique
+used inside `plan`, `design`, and `iterate`. Reads `DESIGN.md` when present. Not the **review** verb:
+grill sharpens a plan before code exists; review reads a PR diff after it.
+_Avoid_: review (the verb, a different thing), interrogate, critique
 
 **brief**:
 An on-demand verb that returns a chat-only product briefing synthesized from `[done]` Outcomes and
@@ -115,10 +120,24 @@ Report. This window does not run phases. If the tool is missing, it stops and le
 the tree untouched. `--until <phase>` stops after that backlog heading id, inclusive. `--allow-gated`
 pre-authorizes gated phases for this goal run, subject to standing directives, and the objective tells
 the goal window to pass that sentence into every child task. On a halt, it stops and does not retry.
-It does not run `consolidate` or `iterate`. It does not advance the Next-action pointer. Distinct from
-the **autonomous driver**: no fresh process per phase, no recovery, no cost ceiling. Yokai does not
-grow a `goal` flag.
+It does not run `consolidate` or `iterate`; `--review` makes it alternate draining runnable phases
+with `/junji review --subagent`, stopping on Approve, on a halt, or after three **review rounds**.
+It does not advance the Next-action pointer. Distinct from the **autonomous driver**: no fresh process
+per phase, no recovery, no cost ceiling. Yokai does not grow a `goal` flag.
 _Avoid_: Goal & scope (a phase-plan section), autonomous driver, yokai launch flag
+
+**review**:
+An on-demand verb that reviews the branch's PR diff against its base (`--base <ref>`, else
+`gh pr view`, else `origin/HEAD`) and against the spec on disk (PLAN, CONTEXT locks and bar, DESIGN,
+each `[done]` phase's In scope / Explicitly out / Outcome), tests first with one mutation probe, then
+five axes: correctness, readability and simplicity, architecture, security, performance. Writes one
+**review note** under `.koi/run/reviews/` and appends every Critical / Required **finding** as an
+ordinary **fix phase** (heading + `phases/phase-NN-*.md`), then commits those working-folder files.
+Stops on a dirty tree or an in-flight phase; remaining `[todo]` only warn. Writes no product code and
+never `FEEDBACK.md`; posts nothing to GitHub; never runs the verification bar. `--subagent` delegates
+one round to a fresh child. Neither **grill** (plan-time) nor yokai's **judge** (one Build iteration
+inside a phase).
+_Avoid_: judge (yokai's advisory Build reviewer), grill, code review bot, audit
 
 **iterate**:
 The verb that, after every phase is `[done]`, grills a request (including how to slice it) and appends N
@@ -205,7 +224,7 @@ _Avoid_: worklog (old name), todo-list, log
 The line at the top of `BACKLOG.md` naming the verb a fresh or headless window runs next: the on-disk
 source of truth for "what's next". Advances `begin → plan → refine → next … → consolidate` (`research`,
 `design`, `grill`, `brief`, and `goal` never move it; `iterate` never occupies it and moves it only
-`consolidate → next`).
+`consolidate → next`; `review` never occupies it and sets it to `next` only on Request changes).
 _Avoid_: cursor, current step, status
 
 **Research note** (`.koi/run/researches/NN-<slug>.md`):
@@ -213,6 +232,40 @@ A **reference** findings file written by the `research` verb: one cited note per
 Claims only. Optional context for `plan` and `grill`; created on first `research` use; removed with
 `.koi/run/` on `consolidate`.
 _Avoid_: RESEARCH.md, investigation, phase research, design note
+
+**Review note** (`.koi/run/reviews/review-NN.md`):
+The **reference** record of one **review round**: the base used and how it was resolved, the diff
+range, spec conformance, the mutation probe, every **finding** grouped by **severity** with
+`file:line` and axis, the **verdict**, "Scheduled as" (fix-phase ids) and "Not scheduled". `NN` is
+the round. Created on first `review` use; removed with `.koi/run/` on `consolidate`. Never
+`FEEDBACK.md` (yokai's file).
+_Avoid_: FEEDBACK.md, review comment, judge note, research note
+
+**Finding**:
+One defect or gap the `review` verb records: `file:line`, an axis (correctness, readability,
+architecture, security, performance, spec, or tests), the problem, and the named fix. Numbered `F1,
+F2, …` within a review note. Critical / Required findings are clustered into **fix phases**; the rest
+wait under "Not scheduled" until `refine` promotes one.
+_Avoid_: comment, issue (a tracker item), FEEDBACK entry, veto
+
+**Severity**:
+The one grade every finding carries: **Critical** (blocks merge: security, data loss, broken function,
+a weakened bar, a violated lock), **Required** (must change before merge), **Nit** (style; author may
+ignore), **Optional** (worth considering), **FYI** (no action). Only Critical and Required are
+scheduled. Not a **tier** and not a **status tag**.
+_Avoid_: priority, tier, blocking/non-blocking (say the grade), P0/P1 (phase ids)
+
+**Verdict**:
+The review round's result, one of two: **Approve** (zero Critical and zero Required; nothing
+appended; Next action untouched) or **Request changes** (fix phases appended; Next action set to
+`/junji next`). Not the **gate** verdict: the reviewer never runs the verification bar.
+_Avoid_: gate result, LGTM, pass/fail, green/red (gate words)
+
+**Review round**:
+One invocation of `review`: one note, one verdict, one commit. `goal --review` runs at most three per
+goal run, alternating with drains of `next --subagent`. Not a Build **iteration** and not a grill
+**round**.
+_Avoid_: iteration, grill round, pass, cycle
 
 **Sensor** (`.koi/sensors/*.sh`):
 An optional executable check that can implement part of the method’s verification bar.
@@ -243,6 +296,14 @@ _Avoid_: task file, subplan, spec, tutorial
 Step 2 of `next`: read the exact source files the phase plan names and study idioms for that slice. Not the
 `research` verb and not a research note.
 _Avoid_: research (the verb), investigate
+
+**Fix phase**:
+An ordinary **phase** the `review` verb appends for one cluster of Critical / Required findings
+(by subsystem or root cause, Critical first): a `### [todo] PN - Fix: <cluster>` heading continuing
+`P{max+1}`, copying the tier tag of the `[done]` phase it mostly touches, plus a full phase plan whose
+In scope is those findings. `next`, `goal`, and yokai run it with no special casing. Not a Build
+**iteration** and not a FEEDBACK entry.
+_Avoid_: follow-up, patch, review task, iteration, FEEDBACK item
 
 **Explicitly out**:
 The phase plan's scope-guard list of what a phase deliberately does *not* do: what stops scope creep.
@@ -314,7 +375,7 @@ _Avoid_: talk contract, tone guide, ADHD mode, style prompt
 
 **Document type**:
 The fixed purpose of a working-folder file: **explanation** (PLAN), **reference** (CONTEXT, BACKLOG,
-DESIGN, notes), **how-to** (METHOD, phase plan). Consolidate follows the host outline. SSOT
+DESIGN, research / design / review notes), **how-to** (METHOD, phase plan). Consolidate follows the host outline. SSOT
 `references/docs.md`. Junji does not generate tutorials. Types are method-fixed, not chosen per project.
 The **brief** verb writes no file and is not a document type. The **goal** verb writes no file either.
 _Avoid_: template kind, genre, outline-approval
@@ -334,7 +395,7 @@ _Avoid_: review, Q&A, interrogation, one-question-at-a-time, design (the verb)
 **Autonomous driver**:
 A thin external supervisor that loops `next` unattended: spawning a fresh window per phase and verifying
 the on-disk contract: only after a human has run `begin → plan → refine` (and, later, `iterate` if they
-want more work). Carries no work-intelligence; it never grills, iterates, briefs, or runs `goal`. The yokai driver is one
+want more work). Carries no work-intelligence; it never grills, iterates, briefs, reviews, or runs `goal`. The yokai driver is one
 implementation (see [`crates/yokai/CONTEXT.md`](https://github.com/getkoi/koi/blob/main/crates/yokai/CONTEXT.md)). The driver owns optional execution choices; **next** in an interactive window stays one serial phase.
 _Avoid_: runner, orchestrator, bot
 
@@ -365,8 +426,8 @@ _Avoid_: runner, orchestrator, bot
   backlog tag.
 - **"driver"**: the method's *autonomous driver* is the abstract supervisor concept; *the driver* in the
   root `CONTEXT.md` is the Rust application that implements it.
-- **"subagent"**: one host child for `/junji next --subagent`. It runs `/junji next` and does not
-  delegate that phase to a driver verb.
+- **"subagent"**: one host child for `/junji next --subagent` or `/junji review --subagent`. It runs
+  `/junji next` (or `/junji review`) and does not delegate that work to a driver verb.
 - **"tier"**: the `[low]` / `[medium]` / `[high]` / `[ultra]` heading tag. Not a Model and not a
   role profile. Interactive **next** does not switch Agent/Model; yokai walks
   the tagged band.
@@ -374,6 +435,12 @@ _Avoid_: runner, orchestrator, bot
   for a **source doc**. Use the verb name; never call a source doc a brief.
 - **"goal"**: the **`goal` verb** (a harness goal that repeats `next`) vs a phase plan's **Goal & scope**
   section (that phase's in and out list). Say which.
+- **"review"**: three things. The method's **`review` verb** reads a whole PR diff against base and
+  spec, writes `reviews/review-NN.md`, and appends **fix phases**; it never writes `FEEDBACK.md`.
+  Yokai's **judge** is the advisory read-only reviewer of one Build **iteration** inside a phase; its
+  findings go to `FEEDBACK.md` (see [`crates/yokai/CONTEXT.md`](https://github.com/getkoi/koi/blob/main/crates/yokai/CONTEXT.md)).
+  **Grilling** is a plan-time interview, not a review. Name which; the Skills by-role index lists
+  yokai `judge`, never `review`.
 
 ## Example dialogue
 
@@ -397,3 +464,9 @@ what works, how to run/check, what to watch. It writes nothing and does not move
 **Dev:** The phase plan has a Goal & scope section. Is that `/junji goal`?
 **Expert:** Goal & scope is that phase's in and out list. `/junji goal` asks the harness to run runnable
 phases one by one with `/junji next --subagent`. It writes nothing and does not move Next action.
+**Dev:** The PR is up. Can junji review it before I ask a human?
+**Expert:** `/junji review`. Clean tree, nothing in flight. It diffs the branch against its base, checks
+the diff against PLAN, CONTEXT locks, DESIGN, and each phase's Outcome, probes the tests once, then
+grades findings. Critical and Required become ordinary fix phases on the backlog and Next action is
+`/junji next`; the rest wait in `reviews/review-01.md`. `/junji goal --review` repeats drain and
+review up to three rounds.
