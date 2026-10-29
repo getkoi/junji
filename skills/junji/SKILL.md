@@ -2,14 +2,14 @@
 name: junji
 description: >-
   junji — long multi-session engineering projects (ports, migrations, large refactors, greenfield)
-  driven from an on-disk working folder (.koi/run/) with durable project home at .koi/. Eleven verbs:
-  begin, research, design, plan, grill, brief, refine, next, goal, iterate, consolidate. Use when the user
-  wants a phased/junji project, says "do the next task", or invokes /junji (optionally with a verb).
+  driven from an on-disk working folder (.koi/run/) with durable project home at .koi/. Twelve verbs:
+  begin, research, design, plan, grill, brief, refine, next, goal, review, iterate, consolidate. Use when
+  the user wants a phased/junji project, says "do the next task", or invokes /junji (optionally with a verb).
 license: MIT
 user-invocable: true
 metadata:
   author: matheusps
-  version: "0.14.0"
+  version: "0.15.0"
 ---
 
 # Junji execution
@@ -41,6 +41,7 @@ can spawn a fresh process per phase: see `references/autonomous-driver.md`.
     phases/                APPEND — how-to contract per phase (phase-00-*.md, …), Outcome on completion
     researches/            OPTIONAL — reference notes from the research verb (NN-<slug>.md)
     designs/               OPTIONAL — reference notes from the design verb (NN-<slug>.md)
+    reviews/               OPTIONAL — reference notes from the review verb (review-NN.md)
     ledger.jsonl sessions.jsonl …   # driver audit (auto-created)
 ```
 
@@ -94,7 +95,7 @@ Types are fixed. Full rules: `references/docs.md`.
 | File | Type |
 |---|---|
 | `PLAN.md` | explanation (why) |
-| `CONTEXT.md`, `BACKLOG.md`, `DESIGN.md`, research/design notes | reference (facts) |
+| `CONTEXT.md`, `BACKLOG.md`, `DESIGN.md`, research/design/review notes | reference (facts) |
 | `METHOD.md`, phase plan | how-to |
 | consolidate deliverable | host outline; default = explanation + locked facts, not a changelog |
 
@@ -110,7 +111,8 @@ Types are fixed. Full rules: `references/docs.md`.
 | `brief` | Chat-only product briefing from `[done]` phases (does not advance Next action) | [verbs/brief.md](verbs/brief.md) |
 | `refine` | Decompose / reshape the phase list (markdown only) | [verbs/refine.md](verbs/refine.md) |
 | `next` | Run one phase end to end (`--subagent` delegates it) | [verbs/next.md](verbs/next.md) |
-| `goal` | On demand: a harness goal runs `next --subagent` one phase at a time (does not advance Next action) | [verbs/goal.md](verbs/goal.md) |
+| `goal` | On demand: a harness goal runs `next --subagent` one phase at a time; `--review` alternates it with `review` (does not advance Next action) | [verbs/goal.md](verbs/goal.md) |
+| `review` | On demand: review the PR diff against base + spec → `reviews/review-NN.md`; Critical/Required become fix phases (`--subagent` delegates it) | [verbs/review.md](verbs/review.md) |
 | `iterate` | After all phases `[done]`, grill a delta and append already-specced phases | [verbs/iterate.md](verbs/iterate.md) |
 | `consolidate` | Collapse `.koi/run/` into one repo-native deliverable | [verbs/consolidate.md](verbs/consolidate.md) |
 
@@ -119,17 +121,18 @@ Driver loop / harnesses / recovery (not a verb): [references/autonomous-driver.m
 ## Dispatch
 
 Parse the first argument as the verb (table above). Tokens after the verb are **verb options**: `--name`,
-no value, except `goal`'s `--until`, which takes the next token. `--until=p4` is an unknown option.
-The verb reference defines which options exist. An unknown option, a second `--until`, a second
-`--allow-gated`, or `--until` with no phase stops the verb and names the token; do not run the steps. "Do the next task" is bare
-`next` (no options). `next` defines `--subagent`. `goal` defines `--until` and `--allow-gated`.
+no value, except `goal`'s `--until` and `review`'s `--base`, which take the next token. `--until=p4`
+and `--base=main` are unknown options. The verb reference defines which options exist. An unknown
+option, a repeated option, or `--until` / `--base` with no value stops the verb and names the token;
+do not run the steps. "Do the next task" is bare `next` (no options). `next` defines `--subagent`.
+`goal` defines `--until`, `--allow-gated`, and `--review`. `review` defines `--base` and `--subagent`.
 - No verb and `.koi/run/` is absent, or holds only an `init` stub (no `.koi/run/BACKLOG.md` yet) → **`begin`**.
 - No verb but the user said "do the next task" (or similar) → **`next`**.
 - No verb otherwise → read `.koi/run/BACKLOG.md › Next action` and run (or confirm) the verb it names.
   That pointer advances `begin → plan → refine → next … → (iterate → next …)* → consolidate`
   (`research`, `design`, `grill`, `brief`, and `goal` never move it; `iterate` never occupies it and moves it only
-  `consolidate → next`).
-- Ambiguous → ask which verb in one line, listing the eleven.
+  `consolidate → next`; `review` never occupies it and sets it to `next` only on Request changes).
+- Ambiguous → ask which verb in one line, listing the twelve.
 
 Then **read that verb's reference and follow it.**
 
@@ -142,7 +145,9 @@ The working folder is always `.koi/run/` at the repo root. `begin` starts withou
   visual contract (follows Skills for `design`), `plan`/`grill` think, `refine` shapes the phase list,
   `next` executes one phase (Must skills whose *when* matches; `--subagent` delegates that phase to one
   isolated child), optional `goal` asks the harness for a long-running goal that repeats that child and
-  does not run phases in this window, `iterate` grills a post-execution delta onto the backlog, optional
+  does not run phases in this window, optional `review` reads the PR diff against base and spec and
+  schedules Critical/Required findings as ordinary fix phases (never product code, never `FEEDBACK.md`),
+  `iterate` grills a post-execution delta onto the backlog, optional
   `brief` returns a chat-only product briefing (writes nothing). The Next-action pointer tracks where you are.
 - One phase per `next`. Never start the following phase.
 - `.koi/run/PLAN.md`, `CONTEXT.md`, and `METHOD.md` are stable (PLAN/CONTEXT move only when a decision

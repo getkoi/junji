@@ -19,14 +19,14 @@ In the project you want to work on:
 /junji next
 ```
 
-`begin` creates the working folder and surveys the repository. `plan` defines the work and runnable verification commands. `refine` decomposes it into phases. Repeat `next` to implement, verify, and commit one phase at a time. `goal` can ask the harness to repeat `next --subagent` until a halt or `--until`. It does not run `consolidate`. When every phase is done, `consolidate` writes the durable deliverable. Use `iterate` first when there is more work to add.
+`begin` creates the working folder and surveys the repository. `plan` defines the work and runnable verification commands. `refine` decomposes it into phases. Repeat `next` to implement, verify, and commit one phase at a time. `goal` can ask the harness to repeat `next --subagent` until a halt or `--until`. It does not run `consolidate`. `review` reads the PR diff against its base and the spec on disk, writes a review note, and schedules Critical / Required findings as ordinary fix phases; `goal --review` alternates draining phases and reviewing for up to three rounds. When every phase is done, `consolidate` writes the durable deliverable. Use `iterate` first when there is more work to add.
 
 The guide is at <https://koi.deno.dev/junji/docs/guide>.
 
 ## Package
 
 - [`skills/junji/SKILL.md`](skills/junji/SKILL.md): the skill.
-- [`skills/junji/verbs/`](skills/junji/verbs/): the eleven verbs.
+- [`skills/junji/verbs/`](skills/junji/verbs/): the twelve verbs (`begin`, `research`, `design`, `plan`, `grill`, `brief`, `refine`, `next`, `goal`, `review`, `iterate`, `consolidate`).
 - [`skills/junji/templates/`](skills/junji/templates/): files `begin` copies.
 - [`skills/junji/CONTEXT.md`](skills/junji/CONTEXT.md): method glossary.
 - [`skills/junji/docs/adr/`](skills/junji/docs/adr/): method packaging decisions.
