@@ -24,7 +24,9 @@ below in this window.
   not load, implement, verify, or commit. When the child finishes, post its Report here (`Phase N of M`,
   `Next action`, the win or the halt) and stop. Do not retry. Do not start another phase. If this
   harness cannot start a subagent, stop and say so; leave the backlog, phase plan, and tree untouched.
-  A `[gated]` phase still halts inside the child; this window does not pre-authorize it.
+  If the invoking prompt already says this run pre-authorized gated phases, include that one sentence
+  in the child task. Bare `/junji next --subagent` does not invent authorization. Do not write it to
+  CONTEXT, METHOD, or the backlog. Without that sentence, a `[gated]` phase still halts inside the child.
 
 1. **Load state.** Read `.koi/run/CONTEXT.md` (including **Skills**), `.koi/run/BACKLOG.md` (status + Carry-forward), and
    `.koi/run/METHOD.md`. If `.koi/run/DESIGN.md` exists (or `CONTEXT.md › Design contract` names it),
