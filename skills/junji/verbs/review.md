@@ -55,11 +55,15 @@ Stop unless all of these hold; name the miss and the verb to run instead:
    `.koi/run/BACKLOG.md` (headings, tier tags, Carry-forward). If `.koi/run/DESIGN.md` exists (or
    `CONTEXT.md › Design contract` names it), **read it**. Read every `[done]` phase plan's **Goal &
    scope** (In scope, Explicitly out) and **Outcome**. Read earlier `.koi/run/reviews/review-*.md`
-   to see what a previous round already scheduled. Do not read `researches/` or `designs/`.
+   to see what a previous round already scheduled and which of those fix phases are still `[todo]`.
+   Do not read `researches/` or `designs/`.
 2. **Resolve the base.** In this order, first hit wins: `--base <ref>`; then
    `gh pr view --json baseRefName` for the current branch (use `origin/<baseRefName>`); then
    `origin/HEAD` (`git symbolic-ref refs/remotes/origin/HEAD`). None resolvable → stop and ask for
    `--base <ref>` in one line. Record which rule produced the base: the first chat line names it.
+   When the base is a remote-tracking ref, run `git fetch <remote> <branch>` first so a stale local
+   ref does not pull already-merged commits into the diff. A failed fetch only warns: say the base
+   may be stale and review against the local ref.
 3. **Compute the diff.** `git diff <base>...HEAD` (merge-base form) and `git diff --stat <base>...HEAD`.
    Review only this range: not the working tree, not unrelated history. An empty diff → stop: nothing
    to review; leave the tree untouched. Note the file list and size; a range that cannot be read in
@@ -74,9 +78,11 @@ Stop unless all of these hold; name the miss and the verb to run instead:
    they test behavior, name the case, cover the edges the phase plan named? Then run **one mutation
    probe**: invert one condition the diff adds (drop a negation, swap `&&` for `||`, off-by-one a
    bound) in one source file, run the project's test command from `CONTEXT.md › Toolchain` (not the
-   whole verification bar), then restore the file so `git status --porcelain` is empty again. A probe
-   that stays green is a Required finding: name the missing test case. One probe per round. The
-   reviewer never runs the verification bar: its verdict belongs to `next` and the driver.
+   whole verification bar), then restore the file with `git restore <file>` and confirm
+   `git status --porcelain` is empty before step 8, even when the test command fails or times out.
+   The probe is the only edit this verb makes outside `.koi/run/`, and it never survives the round.
+   A probe that stays green is a Required finding: name the missing test case. One probe per round.
+   The reviewer never runs the verification bar: its verdict belongs to `next` and the driver.
 6. **Five axes.** For each changed file, in this order: **correctness** (does it do what the phase and
    tests say; edges, error paths, state), **readability and simplicity** (names, control flow, dead
    code, abstractions that earn their weight, a conditional bolted onto an unrelated flow), **architecture**
@@ -97,15 +103,20 @@ Stop unless all of these hold; name the miss and the verb to run instead:
 9. **Cluster and append fix phases.** Only Critical and Required are scheduled. Cluster them by
    subsystem or root cause so one phase fixes one thing; Critical clusters come first. Continue
    `P{max+1}`. For each cluster:
-   - Append an ordinary heading: `### [todo] PN - Fix: <cluster title>`. If the fix is destructive or
-     needs a human decision, prefix `[gated]` as `refine` would. Copy the **tier tag** of the `[done]`
-     phase the cluster mostly touches, when that heading has one; otherwise none. Then one line: the
-     finding ids from the note, the files, `depends_on` when a cluster builds on another.
+   - Append an ordinary heading in this exact tag order: `### [gated] [<tier>] [todo] PN - Fix:
+     <cluster title>`. Every tag goes before `[todo]`: yokai reads tags only up to the status tag, and
+     a tag after it hides the phase. Keep `[gated]` only when the fix is destructive or needs a human
+     decision, as `refine` would. Keep `[<tier>]` only when the `[done]` phase the cluster mostly
+     touches has one, and copy it. With neither, the heading is `### [todo] PN - Fix: <cluster title>`.
+     Then one line: the finding ids from the note, the files, `depends_on` when a cluster builds on
+     another.
    - Write `.koi/run/phases/phase-NN-<slug>.md` from `templates/phase-plan.template.md`: **In scope**
      is the findings, **Explicitly out** is every other finding and any adjacent improvement, a numbered
      **Approach** naming each move, and the test the probe or the finding showed missing. Pad `NN` to
      match siblings. Never write under repo-root `phases/`.
-   Record each phase id under the note's **Scheduled as**. Nit / Optional / FYI go under **Not
+   Record each phase id under the note's **Scheduled as**. A Critical / Required finding that a fix
+   phase from an earlier round already covers, and that phase is still `[todo]`, gets no new phase:
+   list it under **Scheduled as** with that phase's id. Nit / Optional / FYI go under **Not
    scheduled**: promote one with `/junji refine`. Write **no product code**.
 10. **Set the verdict and the pointer.** Zero Critical and zero Required → **Approve**: no heading, no
     phase file, Next action untouched. Otherwise → **Request changes**: set `.koi/run/BACKLOG.md ›

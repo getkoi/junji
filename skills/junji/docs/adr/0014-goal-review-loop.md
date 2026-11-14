@@ -52,8 +52,6 @@ goal that drains, reviews, and drains again closes the loop without a driver fla
 - **Review after every phase** — the unit of review is the PR, not a phase; yokai's judge already
   covers the phase.
 - **Draining the third round's fix phases** — the stop is the cap, not "one more". A human decides.
-- **Reviewing when `--until` stopped the drain with `[todo]` left and no `--review`** — the goal
-  does not run `review` unless asked.
 - **A `--rounds <n>` option** — a second valued option on `goal` for one number nobody has asked to
   change. Reopen when a run needs it.
 - **Auto-run `consolidate` on Approve** — surface it, as ADR-0012 does.

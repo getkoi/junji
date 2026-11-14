@@ -299,8 +299,9 @@ _Avoid_: research (the verb), investigate
 
 **Fix phase**:
 An ordinary **phase** the `review` verb appends for one cluster of Critical / Required findings
-(by subsystem or root cause, Critical first): a `### [todo] PN - Fix: <cluster>` heading continuing
-`P{max+1}`, copying the tier tag of the `[done]` phase it mostly touches, plus a full phase plan whose
+(by subsystem or root cause, Critical first): a `### [gated] [<tier>] [todo] PN - Fix: <cluster>`
+heading continuing `P{max+1}`, every tag before `[todo]`, `[gated]` only under the `refine` rule,
+copying the tier tag of the `[done]` phase it mostly touches, plus a full phase plan whose
 In scope is those findings. `next`, `goal`, and yokai run it with no special casing. Not a Build
 **iteration** and not a FEEDBACK entry.
 _Avoid_: follow-up, patch, review task, iteration, FEEDBACK item

@@ -22,7 +22,8 @@ five axes, severity prefixes, tests first with a mutation probe, structural reme
 1. **Add an on-demand `review` verb** — twelfth verb, same progressive-disclosure skill. Human
    triggered, or by `goal --review`. The autonomous driver never calls it.
 2. **The unit is the PR diff against its base, computed with git.** Base resolution, first hit wins:
-   `--base <ref>` → `gh pr view --json baseRefName` → `origin/HEAD` → stop and ask. The range is
+   `--base <ref>` → `gh pr view --json baseRefName` → `origin/HEAD` → stop and ask. A
+   remote-tracking base is fetched first; a failed fetch warns that the base may be stale. The range is
    `git diff <base>...HEAD`. The first chat line names the base and the rule that produced it. An
    empty diff stops the verb.
 3. **Preconditions.** A dirty tree stops the verb (name the paths; no stash, no commit). An in-flight
@@ -31,16 +32,19 @@ five axes, severity prefixes, tests first with a mutation probe, structural reme
 4. **Method order.** Spec conformance first: `PLAN.md`, every CONTEXT Locked decision and the
    Verification bar (a weakened check is Critical), `DESIGN.md` when present, each `[done]` phase's
    In scope / Explicitly out / Outcome. Then tests first with **one** mutation probe (invert one
-   added condition, run the project's test command, restore the file; a green probe is a Required
-   finding naming the missing test). Then five axes in order: correctness, readability and simplicity,
+   added condition, run the project's test command, restore the file with `git restore` and confirm
+   a clean tree even when the run fails; a green probe is a Required finding naming the missing
+   test). Then five axes in order: correctness, readability and simplicity,
    architecture, security, performance. The reviewer never runs the verification bar.
 5. **Severity is one of five**: Critical, Required, Nit, Optional, FYI. Every finding carries
    `file:line` and an axis. Only Critical and Required are scheduled.
 6. **Feedback lives on disk as ordinary phases.** Critical / Required findings are clustered by
-   subsystem or root cause, Critical first, and appended as `### [todo] PN - Fix: <cluster>` headings
-   continuing `P{max+1}` with a full `phases/phase-NN-<slug>.md` each (same mechanism as `iterate`).
-   A fix phase copies the tier tag of the `[done]` phase it mostly touches; `[gated]` under the
-   `refine` rule. The full record is `.koi/run/reviews/review-NN.md` from
+   subsystem or root cause, Critical first, and appended as `### [gated] [<tier>] [todo] PN - Fix:
+   <cluster>` headings continuing `P{max+1}` with a full `phases/phase-NN-<slug>.md` each (same
+   mechanism as `iterate`). Every tag precedes `[todo]`, because yokai stops reading tags at the
+   status tag. A fix phase copies the tier tag of the `[done]` phase it mostly touches; `[gated]`
+   under the `refine` rule. A finding already covered by a still-`[todo]` fix phase from an earlier
+   round points at that phase instead of getting a new one. The full record is `.koi/run/reviews/review-NN.md` from
    `templates/review-note.template.md`; `NN` is the review round. Nit / Optional / FYI are listed
    under "Not scheduled" and promoted only through `refine`. Never `FEEDBACK.md`.
 7. **Verdict.** **Approve**: zero Critical and zero Required, nothing appended, Next action
