@@ -16,6 +16,7 @@ the writing SSOT.
 | `BACKLOG.md` | reference | fresh window | Position: Next action, phase list, carry-forward. |
 | `DESIGN.md` | reference | window shipping UI | Binding visual / experiential tokens and rules. |
 | research / design notes | reference | `plan` / `grill` / `design` / `iterate` | Cited findings. Claims only. |
+| review note | reference | human / `refine` / next `review` round | One PR review round: base, diff, findings with `file:line` and severity, verdict, what was scheduled. |
 | `METHOD.md` | how-to | `next` window | Recipe for one phase. Byte-copied by `begin`; never rewritten per project. |
 | phase plan | how-to | Build loop / `iterate` | Contract for one slice: in/out, numbered approach, gate. |
 | consolidate deliverable | host outline | later human | Follow CONTEXT › Deliverable spec model verbatim. Narrative default: explanation + locked facts, not a changelog. |
@@ -29,7 +30,7 @@ the writing SSOT.
 3. **PLAN vs CONTEXT.** Rationale lives in PLAN. CONTEXT locked decisions are **fact-only**: the
    decision, not why. CONTEXT wins for execution; PLAN wins for the why.
 4. **Notes are claims.** Research and design notes: what the source says, with a citation. No
-   "so we should…".
+   "so we should…". A review note's finding names its fix in one clause; the fix itself is a phase.
 5. **Phase plan is a contract.** Goal, Explicitly out, checklists stay. Approach is a **numbered
    recipe**, not an essay, not a tutorial.
 6. **Consolidate is documentation.** Map Outcomes + locked decisions into the host outline. Drop

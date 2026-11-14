@@ -25,7 +25,8 @@ A failed valid check is kept and reported; it is never replaced with an easier b
 **Precondition.** The driver presumes the project is already **planned**: a human (or an earlier step) ran
 `begin` → `plan` → `refine` (and later `/junji iterate` if they wanted more work after the backlog emptied),
 so `.koi/run/` exists with a populated phase list. The driver only loops `next`: it never creates the project strategy or backlog, grills,
-iterates, or briefs. When no `[todo]` remain it surfaces consolidate (destructive); the human may `/junji iterate` instead.
+iterates, reviews, or briefs. When no `[todo]` remain it surfaces consolidate (destructive); the human may `/junji iterate` instead.
+A **fix phase** that `/junji review` appended is an ordinary phase to the driver.
 
 **`/junji goal` is not this loop.** It is an on-demand verb in one window: it asks the harness for a
 long-running goal that repeats `/junji next --subagent`, then waits for each child's Report. It does
